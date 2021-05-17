@@ -35,6 +35,19 @@ se hace la solicitud al catalogrolador para ejecutar la
 operación solicitada
 """
 
+
+# ___________________________________________________
+#  Variables
+# ___________________________________________________
+countriesfile = 'countries.csv'
+connectionsfile = 'connections.csv'
+landingpointsfile = 'landing_points.csv'
+
+catalog = None
+
+# ___________________________________________________
+#  Menu principal
+# ___________________________________________________
 def printMenu():
     print("\n")
     print("*******************************************")
@@ -45,6 +58,7 @@ def printMenu():
     print("4- Ecatalograr ruta minima entre paises")
     print("5- Identificar infraestructura crítica")
     print("6- Impacto de fallo en un landing point")
+    print("*******************************************")
 
 
 def optionTwo(catalog):
@@ -81,7 +95,7 @@ def optionEight(catalog):
     "Req 7 - Bono"
     pass
 
-catalog = None
+
 
 
 def thread_cycle():
@@ -90,7 +104,7 @@ def thread_cycle():
         inputs = input('Seleccione una opción para cataloginuar\n')
         if int(inputs[0]) == 1:
             print("Cargando información de los archivos ....")
-            catalog = controller.loadData()
+            catalog = controller.loadData(connectionsfile, landingpointsfile, countriesfile)
 
         elif int(inputs[0]) == 2:
             pass
