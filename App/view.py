@@ -107,19 +107,19 @@ def thread_cycle():
         if int(inputs[0]) == 1:
             print("Cargando información de los archivos ....")
             catalog = controller.loadData(connectionsfile, landingpointsfile, countriesfile)
-            b = gr.vertices(catalog["internet_graph"])
-            a = gr.edges(catalog["internet_graph"])
-            for i in lt.iterator(b): 
-                print(i)
-            for x in lt.iterator(a):
-                print(x)
+            # b = gr.vertices(catalog["internet_graph"])
+            # a = gr.edges(catalog["internet_graph"])
+            # for i in lt.iterator(b): 
+            #     print(i)
+            # for x in lt.iterator(a):
+            #     print(x)
 
-            print(gr.numVertices(catalog["internet_graph"]))
-            print(mp.size(catalog["landingpoints"]))
-            print(mp.get(catalog["landingpoints"], '5901')['value'])
-            print(gr.numEdges(catalog["internet_graph"]))
-            print(gr.getEdge(catalog["internet_graph"], "10726-West African Cable System (WACS)", "4181-West African Cable System (WACS)"))
-            print(gr.getEdge(catalog["internet_graph"], "17027-GTMO-PR", "17027-GTMO-1"))
+            # print(gr.numVertices(catalog["internet_graph"]))
+            # print(mp.size(catalog["landingpoints"]))
+            # print(mp.get(catalog["landingpoints"], '5901')['value'])
+            # print(gr.numEdges(catalog["internet_graph"]))
+            # print(gr.getEdge(catalog["internet_graph"], "10726-West African Cable System (WACS)", "4181-West African Cable System (WACS)"))
+            # print(gr.getEdge(catalog["internet_graph"], "17027-GTMO-PR", "17027-GTMO-1"))
             
         elif int(inputs[0]) == 2:
             pass
