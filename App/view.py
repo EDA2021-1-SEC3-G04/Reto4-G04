@@ -24,6 +24,7 @@ import config as cf
 import sys
 import threading
 import controller
+from DISClib.ADT.graph import gr
 from DISClib.ADT import list as lt
 assert cf
 
@@ -105,7 +106,16 @@ def thread_cycle():
         if int(inputs[0]) == 1:
             print("Cargando información de los archivos ....")
             catalog = controller.loadData(connectionsfile, landingpointsfile, countriesfile)
+            b = gr.vertices(catalog["internet_graph"])
+            a = gr.edges(catalog["internet_graph"])
+            for i in lt.iterator(b): 
+                print(i)
+            for x in lt.iterator(a):
+                print(x)
 
+            print(gr.numVertices(catalog["internet_graph"]))
+            print(gr.numEdges(catalog["internet_graph"]))
+            print(gr.getEdge(catalog["internet_graph"], "10726-West African Cable System (WACS)", "4181-West African Cable System (WACS)"))
         elif int(inputs[0]) == 2:
             pass
 

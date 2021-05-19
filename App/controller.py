@@ -40,10 +40,20 @@ def loadData(connectionsfile, landingpointsfile, countriesfile):
     loadConnections(catalog, connectionsfile)
     loadLandingPoints(catalog, landingpointsfile)
     loadCountries(catalog, countriesfile)
-
+    return catalog
 
 # Funciones para la carga de datos
 def loadConnections(catalog, connectionsfile):
+    connectionsfile = cf.data_dir + connectionsfile
+    input_file = csv.DictReader(open(connectionsfile, encoding="utf-8-sig"),
+                                delimiter=",")
+    last_lp_cable = None
+    for lp_cable in input_file:
+        if last_lp_cable is not None:
+            model.addConnections(catalog, lp_cable)
+        last_lp_cable = lp_cable
+    model.addLandingPointConnections(catalog)
+    return catalog
     pass
 
 
