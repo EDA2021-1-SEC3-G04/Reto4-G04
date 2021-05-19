@@ -2,21 +2,13 @@ import pytest
 import config
 from DISClib.ADT import orderedmap as om
 from DISClib.ADT import list as lt
+from DISClib.Algorithms.Trees import traversal as tr
 assert config
-
-
-def cmpfunction(key1, key2):
-    if key1 == key2:
-        return 0
-    elif key1 < key2:
-        return -1
-    else:
-        return 1
 
 
 @pytest.fixture
 def tree():
-    tree = om.newMap(omaptype='BST', comparefunction=cmpfunction)
+    tree = om.newMap(omaptype='BST')
     return tree
 
 
@@ -246,3 +238,30 @@ def test_values(tree):
     assert om.size(tree) == 16
     lst = om.values(tree, 10, 40)
     assert lt.size(lst) == 11
+
+
+def test_inorder(tree):
+    tree = om.put(tree, 2, 'book2')
+    tree = om.put(tree, 1, 'book1')
+    tree = om.put(tree, 3, 'book3')
+    lst = tr.inorder(tree)
+    for element in lt.iterator(lst):
+        print(element)
+
+
+def test_preorder(tree):
+    tree = om.put(tree, 2, 'book2')
+    tree = om.put(tree, 1, 'book1')
+    tree = om.put(tree, 3, 'book3')
+    lst = tr.preorder(tree)
+    for element in lt.iterator(lst):
+        print(element)
+
+
+def test_postorder(tree):
+    tree = om.put(tree, 2, 'book2')
+    tree = om.put(tree, 1, 'book1')
+    tree = om.put(tree, 3, 'book3')
+    lst = tr.postorder(tree)
+    for element in lt.iterator(lst):
+        print(element)
