@@ -47,43 +47,35 @@ def initCatalog():
     catalog["cables"] = mp.newMap(numelements=14000, maptype='PROBING')
     catalog["countries"] = mp.newMap(numelements=14000, maptype='PROBING')
     catalog['internet_graph'] = gr.newGraph(datastructure='ADJ_LIST', 
-                                    directed=False, 
+                                    directed=True, 
                                     size=14000, 
                                     comparefunction= cmpLandingPoints)
     return catalog
 
-def cmpLandingPoints(lp, lp_dict):
-    lp_code = lp_dict['key']
-    if (lp == lp_code):
-        return 0
-    elif (lp > lp_code):
-        return 1
-    else:
-        return -1
 
+# connections.csv
 def addConnections(catalog, connection):
     origin_lp = connection["origin"]
     destination_lp = connection["destination"]
     cable = connection["cable_name"]
     cable_length = connection["cable_length"]
     bandwidth = connection["capacityTBPS"]
-    #checkdistance
+    # TODO: checkdistance _ distancia entre dos puntos o length
     origin = formatVertex(origin_lp, cable)
     destination = formatVertex(destination_lp, cable)
     
-    addLpVertex(catalog, origin)
-    addLpVertex(catalog,destination)
+    addLPVertex(catalog, origin)
+    addLPVertex(catalog, destination)
     addCable(catalog, origin, destination, cable_length)
     addCableLanding(catalog, origin_lp, cable)
     addCableLanding(catalog, destination_lp, cable)
     
+
+    # addCableInfo(catalog, connection)
     return catalog
 
-def formatVertex(origin, cable):
-    name = origin + '-' + cable
-    return name
 
-def addLpVertex(catalog, landingPt_id):
+def addLPVertex(catalog, landingPt_id):
     try:
         if not gr.containsVertex(catalog['internet_graph'], landingPt_id):
             gr.insertVertex(catalog['internet_graph'], landingPt_id)
@@ -91,13 +83,16 @@ def addLpVertex(catalog, landingPt_id):
     except Exception as exp:
         error.reraise(exp, 'model:addstop')
     
+
 def addCable(catalog, origin, destination, distance):
     edge = gr.getEdge(catalog['internet_graph'], origin, destination)
     if edge is None:
         gr.addEdge(catalog['internet_graph'], origin, destination, distance)
     return catalog
 
+
 def addCableLanding(catalog, landingPt, cable):
+    """Añade un cable a la lista para cada landinpoint"""
     entry = mp.get(catalog['landingpoints'], landingPt)
     if entry is None:
         lstcables = lt.newList()
@@ -109,7 +104,9 @@ def addCableLanding(catalog, landingPt, cable):
             lt.addLast(lstcables, cable)
     return catalog
 
+
 def addLandingPointConnections(catalog):
+    """Conexiones entre vertices de un landinpoint"""
     lstLandingPts = mp.keySet(catalog['landingpoints'])
     for key in lt.iterator(lstLandingPts):
         lstCables = mp.get(catalog['landingpoints'], key)['value']
@@ -121,6 +118,24 @@ def addLandingPointConnections(catalog):
             prevCable = cable
     return catalog
 
+
+# landingpoints.csv
+def addLandingPoint(catalog, landingPointInfo):
+    landingPoint = landingPointInfo['landing_point_id']
+    entry = mp.get(catalog['landingpoints'], landingPoint)
+    if entry is None:
+        print('no esta ese LP')
+        # TODO: ver que hacer :)
+    else: 
+        lstcables = entry['value']
+        new_entry = {'info': landingPointInfo, 'lstcables': lstcables}
+        mp.put(catalog['landingpoints'], landingPoint, new_entry)
+    return catalog
+
+def formatVertex(origin, cable):
+    name = origin + '-' + cable
+    return name
+
 # Construccion de modelos
 
 # Funciones para agregar informacion al catalogo
@@ -130,5 +145,13 @@ def addLandingPointConnections(catalog):
 # Funciones de consulta
 
 # Funciones utilizadas para comparar elementos dentro de una lista
+def cmpLandingPoints(lp, lp_dict):
+    lp_code = lp_dict['key']
+    if (lp == lp_code):
+        return 0
+    elif (lp > lp_code):
+        return 1
+    else:
+        return -1
 
 # Funciones de ordenamiento

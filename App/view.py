@@ -26,6 +26,7 @@ import threading
 import controller
 from DISClib.ADT.graph import gr
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
 assert cf
 
 
@@ -114,8 +115,12 @@ def thread_cycle():
                 print(x)
 
             print(gr.numVertices(catalog["internet_graph"]))
+            print(mp.size(catalog["landingpoints"]))
+            print(mp.get(catalog["landingpoints"], '5901')['value'])
             print(gr.numEdges(catalog["internet_graph"]))
             print(gr.getEdge(catalog["internet_graph"], "10726-West African Cable System (WACS)", "4181-West African Cable System (WACS)"))
+            print(gr.getEdge(catalog["internet_graph"], "17027-GTMO-PR", "17027-GTMO-1"))
+            
         elif int(inputs[0]) == 2:
             pass
 

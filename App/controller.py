@@ -54,15 +54,23 @@ def loadConnections(catalog, connectionsfile):
         last_lp_cable = lp_cable
     model.addLandingPointConnections(catalog)
     return catalog
-    pass
 
 
 def loadLandingPoints(catalog, landingpointsfile):
-    pass
+    landingpointsfile = cf.data_dir + landingpointsfile
+    input_file = csv.DictReader(open(landingpointsfile, encoding="utf-8-sig"),
+                                delimiter=",")
+    for landingPoint in input_file:
+        # TODO: los keys ya estan, seria añadir la info de este archivo
+        model.addLandingPoint(catalog, landingPoint)
 
 
 def loadCountries(catalog, countriesfile):
-    pass
+    countriesfile = cf.data_dir + countriesfile
+    input_file = csv.DictReader(open(countriesfile, encoding="utf-8-sig"),
+                                delimiter=",")
+    for country in input_file:
+        model.addCountry(catalog, country)
 
 
 # Funciones de ordenamiento
