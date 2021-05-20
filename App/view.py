@@ -37,7 +37,6 @@ se hace la solicitud al catalogrolador para ejecutar la
 operación solicitada
 """
 
-
 # ___________________________________________________
 #  Variables
 # ___________________________________________________

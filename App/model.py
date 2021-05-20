@@ -32,6 +32,7 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT.graph import gr
 from DISClib.Utils import error as error
+import haversine as hs
 assert cf
 
 
@@ -116,10 +117,27 @@ def addLandingPointConnections(catalog):
             if prevCable is not None:
                 addCable(catalog, cable, prevCable, 100)
             prevCable = cable
-        createLocalCable(catalogo, key)
+        createLocalCable(catalog, key)
     return catalog
 
-def createLocalCable(catalogo, landingpoint): 
+def createLocalCable(catalog, landingpoint): 
+    cable_lst = mp.get(catalog['landingpoints'], landingpoint)['value']
+    
+    min_bandwith = 100000.00
+    min_cable = ""
+
+    for cable in lt.iterator(cable_lst): 
+        current_bndw = float(cable['capacityTBPS'])
+        current_cable = cable['cable_name']
+
+        if current_bndw < min_bandwith:
+            min_bandwith = current_bndw
+            min_cable = current_cable
+    
+    local_cable = landingpoint + '-LocalCable' 
+    lt.addLast(cable_lst, local_cable)  
+    mp.put(catalog['cables'], local_cable, {'capacityTBPS': min_bandwith})
+    
     # sacar de mapa LPs la lista de cables
     # para cada cable, buscar su 'capacityTBPS' en el mapa de cables
     # ir viendo cual es menor
@@ -153,8 +171,7 @@ def addLandingPoint(catalog, landingPointInfo):
         new_entry = {'info': landingPointInfo, 'lstcables': lstcables}
         mp.put(catalog['landingpoints'], landingPoint, new_entry)
 
-    else: 
-        
+    else:        
         lstcables = entry['value']
         new_entry = {'info': landingPointInfo, 'lstcables': lstcables}
         mp.put(catalog['landingpoints'], landingPoint, new_entry)
@@ -163,11 +180,52 @@ def addLandingPoint(catalog, landingPointInfo):
 
 # countries.csv
 def addCountry(catalog, countryInfo): 
-    # añadir pais al mapa de paises 
-    # llamar a funcion createLandCable(catalogo, country, capital, latitude/longitud)
+    country = countryInfo["CountryName"]
+    mp.put(catalog["countries"], country, countryInfo)
+    capital = countryInfo["CapitalName"]
+    latitude = countryInfo["CapitalLatitude"]
+    longitude = countryInfo["CapitalLongitude"]
+    createLandCable(catalog, country, capital,latitude, longitude)
+
+# llamar a funcion createLandCable(catalogo, country, capital, latitude/longitud)
 
 def createLandCable(catalog, country, capitalCity, lat, lon):
-    pass
+    
+    addLPVertex(catalog, capitalCity)
+    addLandingPoint(catalog, {'landing_point_id': capitalCity, 'id': country + '-localLP', 'name': country + ' local LP', 'latitude': lat, 'longitude': lon})
+
+    # Conectar a cada LP del país
+    lps_in_country = False
+    all_lps = mp.keySet(catalog['landing_points'])
+    min_distance = 2490239403294
+    closest_sub_lp = ""
+    for landingPt in lt.iterator(all_lps):
+        current_lp = mp.get(catalog['landing_points'], landingPt)['value']
+        if country in current_lp['info']['name']:
+            lps_in_country = True
+            lst_cables = current_lp['lstcables']
+            for cable in lt.iterator(lst_cables): 
+                vertexA = formatVertex(current_lp, cable)
+                # TODO: Ver que distance poner
+                addCable(catalog, vertexA, capitalCity, 100)
+        else: 
+            distance = calcHaversine(current_lp['info']['latitude'], current_lp['info']['longitude'], lat, lon)
+            if distance < min_distance: 
+                min_distance = distance
+                closest_sub_lp = current_lp['info']['name']
+
+
+    if not lps_in_country:
+        print('no habia en el pais', min_distance, closest_sub_lp)
+        # connect con capitalCity
+
+
+def calcHaversine(lat1, lon1, lat2, lon2):
+    loc_1 = (lat1, lon1)
+    loc_2 = (lat2, lon2)
+    return hs.haversine(loc_1, loc_2) 
+
+    
 
 
 def formatVertex(origin, cable):
