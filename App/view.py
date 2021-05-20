@@ -54,9 +54,9 @@ def printMenu():
     print("*******************************************")
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- Ecatalograr clústers (components conectados)")
-    print("3- Ecatalograr puntos de interconexión")
-    print("4- Ecatalograr ruta minima entre paises")
+    print("2- Econtrar clústers (components conectados)")
+    print("3- Econtar puntos de interconexión")
+    print("4- Econtrar ruta minima entre paises")
     print("5- Identificar infraestructura crítica")
     print("6- Impacto de fallo en un landing point")
     print("*******************************************")
@@ -106,19 +106,21 @@ def thread_cycle():
         if int(inputs[0]) == 1:
             print("Cargando información de los archivos ....")
             catalog = controller.loadData(connectionsfile, landingpointsfile, countriesfile)
-            # b = gr.vertices(catalog["internet_graph"])
-            # a = gr.edges(catalog["internet_graph"])
-            # for i in lt.iterator(b): 
-            #     print(i)
-            # for x in lt.iterator(a):
-            #     print(x)
+            
+            print("Cantidad de Landing Points: ", mp.size(catalog["landingpoints"]))
+            print("Cantidad de conexiones entre Landing Points: ", gr.numEdges(catalog["internet_graph"]))
+            print("Cantidad de paises: ", mp.size(catalog["countries"]))
 
-            # print(gr.numVertices(catalog["internet_graph"]))
-            # print(mp.size(catalog["landingpoints"]))
-            # print(mp.get(catalog["landingpoints"], '5901')['value'])
-            # print(gr.numEdges(catalog["internet_graph"]))
-            # print(gr.getEdge(catalog["internet_graph"], "10726-West African Cable System (WACS)", "4181-West African Cable System (WACS)"))
-            # print(gr.getEdge(catalog["internet_graph"], "17027-GTMO-PR", "17027-GTMO-1"))
+            lps = lt.firstElement(mp.keySet(catalog["landingpoints"]))
+            lp_info = mp.get(catalog["landingpoints"], lps)['value']['info']
+            print('Primer landingpoint')
+            print("Landing point id: ", lp_info['landing_point_id'], "id: ", lp_info['id'],"name: ", lp_info['name'],"latitude: ", lp_info['latitude'],"Longitude: ", lp_info["longitude"])
+
+            countries = lt.firstElement(mp.keySet(catalog["countries"]))
+            country_info = mp.get(catalog["countries"], countries)['value']
+            print('Primer pais')
+            print('CountryName: ', country_info['CountryName'], "Population: ", country_info['Population'], "Internet users: ", country_info['Internet users'])
+
             
         elif int(inputs[0]) == 2:
             pass

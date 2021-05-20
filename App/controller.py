@@ -37,8 +37,8 @@ def initCatalog():
 
 def loadData(connectionsfile, landingpointsfile, countriesfile): 
     catalog = initCatalog()
-    loadConnections(catalog, connectionsfile)
     loadLandingPoints(catalog, landingpointsfile)
+    loadConnections(catalog, connectionsfile)
     loadCountries(catalog, countriesfile)
     return catalog
 
