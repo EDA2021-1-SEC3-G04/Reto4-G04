@@ -59,11 +59,19 @@ def printMenu():
     print("4- Econtrar ruta minima entre paises")
     print("5- Identificar infraestructura crítica")
     print("6- Impacto de fallo en un landing point")
+    print("0- SALIR")
     print("*******************************************")
 
 
-def optionTwo(catalog):
+def optionTwo(catalog, lp1, lp2):
     "Req 1"
+    # ans = controller.calcConnectedComponents(catalog, lp1, lp2)
+    # print('El número de clusteres en la red es: ' +
+    #       str(ans[0])
+    # if ans[1]: 
+    #     print()
+    #ans - controler.algo
+
     pass
 
 
@@ -102,11 +110,14 @@ def optionEight(catalog):
 def thread_cycle():
     while True:
         printMenu()
-        inputs = input('Seleccione una opción para cataloginuar\n')
+        inputs = input('Seleccione una opción para cataloginuar\n>')
         if int(inputs[0]) == 1:
             print("Cargando información de los archivos ....")
             catalog = controller.loadData(connectionsfile, landingpointsfile, countriesfile)
-            
+
+            print(gr.getEdge(catalog['internet_graph'],'14331' ,'14331-2Africa' ))
+
+
             print("Cantidad de Landing Points: ", mp.size(catalog["landingpoints"]))
             print("Cantidad de conexiones entre Landing Points: ", gr.numEdges(catalog["internet_graph"]))
             print("Cantidad de paises: ", mp.size(catalog["countries"]))
@@ -123,7 +134,9 @@ def thread_cycle():
 
             
         elif int(inputs[0]) == 2:
-            pass
+            lp1 = input('Ingrese el nombre del primer landing point: ')
+            lp2 = input('Ingrese el nombre del segundo landing point: ')
+            optionTwo(catalog, lp1, lp2)
 
         elif int(inputs[0]) == 3:
             optionThree(catalog)

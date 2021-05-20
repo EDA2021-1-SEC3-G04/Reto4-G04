@@ -61,7 +61,6 @@ def loadLandingPoints(catalog, landingpointsfile):
     input_file = csv.DictReader(open(landingpointsfile, encoding="utf-8-sig"),
                                 delimiter=",")
     for landingPoint in input_file:
-        # TODO: los keys ya estan, seria añadir la info de este archivo
         model.addLandingPoint(catalog, landingPoint)
 
 
@@ -76,3 +75,13 @@ def loadCountries(catalog, countriesfile):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+
+def calcConnectedComponents(catalog, lp1, lp2):
+    return model.calcConnectedComponents(catalog, lp1, lp2)
+
+def connectedComponents(catalog):
+    """
+    Numero de componentes fuertemente conectados
+    """
+    return model.connectedComponents(catalog)
