@@ -58,8 +58,9 @@ def initCatalog():
 
     cables: mapa, Key: cable_name, Value: info -> info de los cables (lenght, capacityTBS...), lstlandingpoints -> landinpoints que conecta ese cable
     """
-    catalog = {"landing_points":None, "internet_graph":None, "components":None, "paths":None, "countries":None, "cables": None}
+    catalog = {"landing_points":None, "internet_graph":None, "components":None, "paths":None, "countries":None, "cables": None, 'lp_names': None}
     catalog['landingpoints'] = mp.newMap(numelements=14000, maptype='PROBING')
+    catalog['lp_names'] = mp.newMap(numelements=14000, maptype='PROBING')
     catalog["cables"] = mp.newMap(numelements=14000, maptype='PROBING')
     catalog["countries"] = mp.newMap(numelements=14000, maptype='PROBING')
     catalog['internet_graph'] = gr.newGraph(datastructure='ADJ_LIST', 
@@ -226,13 +227,13 @@ def addLandingPoint(catalog, landingPointInfo):
     ! Tambien se llama al crear los cables terrestes
     """
     landingPoint = landingPointInfo['landing_point_id']
+    landintPointName = landingPointInfo['name']
     entry = mp.get(catalog['landingpoints'], landingPoint)
     if entry is None:
         lstcables = lt.newList()
         new_entry = {'info': landingPointInfo, 'lstcables': lstcables}
         mp.put(catalog['landingpoints'], landingPoint, new_entry)
-
-
+        mp.put(catalog['lp_names'], landintPointName, landingPoint)
     else:
         if not ('Land' in landingPointInfo['name']):
             lstcables = entry['value']
@@ -325,10 +326,10 @@ def formatVertex(origin, cable):
 
 # Funciones para agregar informacion al catalogo
 def calcConnectedComponents(catalog, lp1, lp2): 
-    catalog['components'] = scc.KosarajuSCC(catalog['connections'])
+    catalog['components'] = scc.KosarajuSCC(catalog['internet_graph'])
     num_clusters = scc.connectedComponents(catalog['components'])
-    # landpts_cluster = scc.stronglyConnected(catalog['componetes'], lp1, lp2)
-    return num_clusters, # landpts_cluster
+    landpts_cluster = scc.stronglyConnected(catalog['components'], lp1, lp2)
+    return num_clusters, landpts_cluster
 
 # Funciones para creacion de datos
 
@@ -341,6 +342,23 @@ def connectedComponents(catalog):
     catalog['components'] = scc.KosarajuSCC(catalog['connections'])
     return scc.connectedComponents(catalog['components'])
 
+
+def getLandingPointId(catalog, lp): 
+    lp_id = None
+    lst_name = mp.keySet(catalog['lp_names'])
+    notFound = True
+    i = 1
+    while notFound: 
+        key = lt.getElement(lst_name, i)
+        if lp in key:
+            notFound = False
+            lp_id = mp.get(catalog['lp_names'], key)['value']
+        i += 1
+
+    return lp_id
+
+
+    
 # Funciones utilizadas para comparar elementos dentro de una lista
 def cmpLandingPoints(lp, lp_dict):
     lp_code = lp_dict['key']

@@ -65,15 +65,19 @@ def printMenu():
 
 def optionTwo(catalog, lp1, lp2):
     "Req 1"
-    # ans = controller.calcConnectedComponents(catalog, lp1, lp2)
-    # print('El número de clusteres en la red es: ' +
-    #       str(ans[0])
-    # if ans[1]: 
-    #     print()
-    #ans - controler.algo
-
-    pass
-
+    lp_id1 = controller.getLandingPointId(catalog, lp1)
+    lp_id2 = controller.getLandingPointId(catalog, lp2)   
+    if (lp_id1 is not None) and (lp_id2 is not None):
+        print(lp_id1, lp_id2)
+        ans = controller.calcConnectedComponents(catalog, lp_id1, lp_id2)
+        print('El número de clusteres en la red es: ' + str(ans[0]))
+        if ans[1]: 
+            print(lp1, "y", lp2, "estan en el mismo cluster")
+        else:
+            print(lp1, "y", lp2, "NO estan en el mismo cluster")
+    else:
+        print('Alguno de los Landinpoint no es válido')
+        
 
 def optionThree(catalog):
     "Req 2"
@@ -115,7 +119,11 @@ def thread_cycle():
             print("Cargando información de los archivos ....")
             catalog = controller.loadData(connectionsfile, landingpointsfile, countriesfile)
 
-            print(gr.getEdge(catalog['internet_graph'],'14331' ,'14331-2Africa' ))
+            lps = lt.firstElement(mp.keySet(catalog["landingpoints"]))
+            lp_info = mp.get(catalog["landingpoints"], lps)['value']['info']
+            lp_infos = mp.get(catalog["landingpoints"], lps)['value']['lstcables']
+            for x in lt.iterator(lp_infos):
+                print(gr.getEdge(catalog['internet_graph'], lp_info['landing_point_id'],lp_info['landing_point_id']+'-'+x))
 
 
             print("Cantidad de Landing Points: ", mp.size(catalog["landingpoints"]))
@@ -126,7 +134,7 @@ def thread_cycle():
             lp_info = mp.get(catalog["landingpoints"], lps)['value']['info']
             print('Primer landingpoint')
             print("Landing point id: ", lp_info['landing_point_id'], "id: ", lp_info['id'],"name: ", lp_info['name'],"latitude: ", lp_info['latitude'],"Longitude: ", lp_info["longitude"])
-
+    
             countries = lt.firstElement(mp.keySet(catalog["countries"]))
             country_info = mp.get(catalog["countries"], countries)['value']
             print('Primer pais')
@@ -136,6 +144,7 @@ def thread_cycle():
         elif int(inputs[0]) == 2:
             lp1 = input('Ingrese el nombre del primer landing point: ')
             lp2 = input('Ingrese el nombre del segundo landing point: ')
+
             optionTwo(catalog, lp1, lp2)
 
         elif int(inputs[0]) == 3:

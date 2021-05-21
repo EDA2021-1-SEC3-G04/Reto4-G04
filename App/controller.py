@@ -80,8 +80,5 @@ def loadCountries(catalog, countriesfile):
 def calcConnectedComponents(catalog, lp1, lp2):
     return model.calcConnectedComponents(catalog, lp1, lp2)
 
-def connectedComponents(catalog):
-    """
-    Numero de componentes fuertemente conectados
-    """
-    return model.connectedComponents(catalog)
+def getLandingPointId(catalog, lp): 
+    return model.getLandingPointId(catalog, lp)
