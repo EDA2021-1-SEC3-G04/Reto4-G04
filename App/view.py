@@ -30,6 +30,8 @@ from DISClib.ADT import map as mp
 assert cf
 
 
+import time
+
 """
 La vista se encarga de la interacción con el usuario
 Presenta el menu de opciones y por cada seleccion
@@ -80,13 +82,22 @@ def optionTwo(catalog, lp1, lp2):
         
 
 def optionThree(catalog):
-    "Req 2"
-    pass
+    ans = controller.pointsInterconnection(catalog)
+    print(ans[0])
+    print(ans[1])
 
-
-def optionFour(catalog):
+def optionFour(catalog, country_1, country_2):
     "Req 3"
-    pass
+    capital_1 = controller.getCapitalCity(catalog, country_1)
+    capital_2 = controller.getCapitalCity(catalog, country_2)
+    # print(capital_1, capital_2)
+    if (capital_1 is not None) and (capital_2 is not None):
+
+        print(gr.getEdge(catalog['internet_graph'],'5693-Colombia-Florida Subsea Fiber (CFX-1)', '3563-Colombia-Florida Subsea Fiber (CFX-1)' ))
+        ans = controller.minimumDistanceCountries(catalog, '5693-Colombia-Florida Subsea Fiber (CFX-1)', '3563-Colombia-Florida Subsea Fiber (CFX-1)')
+        print(ans)
+    else:
+        print('Alguno de los paies no fue valido')
 
 
 def optionFive(catalog):
@@ -114,7 +125,7 @@ def optionEight(catalog):
 def thread_cycle():
     while True:
         printMenu()
-        inputs = input('Seleccione una opción para cataloginuar\n>')
+        inputs = input('Seleccione una opción para continuar\n>')
         if int(inputs[0]) == 1:
             print("Cargando información de los archivos ....")
             catalog = controller.loadData(connectionsfile, landingpointsfile, countriesfile)
@@ -122,10 +133,29 @@ def thread_cycle():
             lps = lt.firstElement(mp.keySet(catalog["landingpoints"]))
             lp_info = mp.get(catalog["landingpoints"], lps)['value']['info']
             lp_infos = mp.get(catalog["landingpoints"], lps)['value']['lstcables']
-            for x in lt.iterator(lp_infos):
-                print(gr.getEdge(catalog['internet_graph'], lp_info['landing_point_id'],lp_info['landing_point_id']+'-'+x))
+            # for x in lt.iterator(lp_infos):
+            #     print(gr.getEdge(catalog['internet_graph'], lp_info['landing_point_id'],lp_info['landing_point_id']+'-'+x))
+            
+            # for x in lt.iterator(mp.keySet(catalog["cables"])):
+            #     # if 'Land' in x:
+            #         # print(x)
+                    
+            #     if 'Local Cable-15036' in x:
+            #         print(x)
 
+            print(gr.adjacentEdges(catalog['internet_graph'], '5808'))
+            
 
+            print('bog')
+
+            # print(gr.adjacentEdges(catalog['internet_graph'], 'Bogota'))
+
+            for x in lt.iterator(gr.adjacentEdges(catalog['internet_graph'], 'Bogota')): 
+                print(x)
+            
+            # for x in lt.iterator(gr.adjacentEdges(catalog['internet_graph'], '5808')): 
+            #     print(x)
+    
             print("Cantidad de Landing Points: ", mp.size(catalog["landingpoints"]))
             print("Cantidad de conexiones entre Landing Points: ", gr.numEdges(catalog["internet_graph"]))
             print("Cantidad de paises: ", mp.size(catalog["countries"]))
@@ -149,10 +179,13 @@ def thread_cycle():
 
         elif int(inputs[0]) == 3:
             optionThree(catalog)
+    
 
         elif int(inputs[0]) == 4:
+            country_1 = input('Ingrese el primer país: ')
+            country_2 = input('Ingrese el segundo país: ')
             
-            optionFour(catalog)
+            optionFour(catalog, country_1, country_2)
 
         elif int(inputs[0]) == 5:
             optionFive(catalog)

@@ -32,8 +32,11 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT.graph import gr
 from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.ADT import stack
 from DISClib.Utils import error as error
 import haversine as hs
+
 assert cf
 
 """
@@ -93,7 +96,7 @@ def addConnections(catalog, connection):
     addLPVertex(catalog, destination)  # Agrega un vertice tipo <LandingPoint>-<Cable>
     # ! TODO: checkdistance -> distancia entre los dos puntos o  el length?
     # addCable(catalog, origin, destination, cable_length)
-    addCable(catalog, origin, destination, cable_length)  # * Agrega un cable con peso de distnace
+    addCable(catalog, origin, destination, distance)  # * Agrega un cable con peso de distnace
 
     addCableLanding(catalog, origin_lp, cable)  # * Agrega a lista de cables para un landinpoint
     addCableLanding(catalog, destination_lp, cable)
@@ -148,12 +151,12 @@ def addLandingPointConnections(catalog):
     for key in lt.iterator(lstLandingPts):
         lstCables = mp.get(catalog['landingpoints'], key)['value']['lstcables']
         prevCable = None
-        addLPVertex(catalog, key)
+        addLPVertex(catalog, key) # * Landinpoint central tipo '34982'
         for cable in lt.iterator(lstCables):
             cable = key + '-' + cable
             if prevCable is not None:
                 addCable(catalog, cable, prevCable, .1) # * Peso de estos cables = 100m = .1 km
-            addCable(catalog, key, cable, .1) # Connecta LP central con todos los otros sub LPs
+            addCable(catalog, key, cable, .1) # * Connecta LP central con todos los otros sub LPs
             prevCable = cable
         createLocalCable(catalog, key, True) # 
         
@@ -230,7 +233,7 @@ def addLandingPoint(catalog, landingPointInfo):
     landintPointName = landingPointInfo['name']
     entry = mp.get(catalog['landingpoints'], landingPoint)
     if entry is None:
-        lstcables = lt.newList()
+        lstcables = lt.newList(datastructure='ARRAY_LIST')
         new_entry = {'info': landingPointInfo, 'lstcables': lstcables}
         mp.put(catalog['landingpoints'], landingPoint, new_entry)
         mp.put(catalog['lp_names'], landintPointName, landingPoint)
@@ -289,6 +292,8 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
         current_lp = mp.get(catalog['landingpoints'], landingPt)['value']
         distance = calcHaversine(current_lp['info']['latitude'], current_lp['info']['longitude'], lat, lon) # Distancia entre capital y el LP actual
         if country in current_lp['info']['name']:
+            addCable(catalog, landingPt, capitalCity, distance)
+            createLocalCable(catalog, capitalCity, False)
             lst_cables = current_lp['lstcables']
             for cable in lt.iterator(lst_cables): 
                 if not('Local Cable' in cable) and not('Land Cable' in cable): # ! Solo se conecta a cables submarinos
@@ -357,8 +362,49 @@ def getLandingPointId(catalog, lp):
 
     return lp_id
 
+def pointsInterconnection(catalog):
+    lst_lps = mp.keySet(catalog['landingpoints'])
+    lstmax_lp = lt.newList(datastructure='ARRAY_LIST')
+    maxdeg = 0
+    for landingpoint in lt.iterator(lst_lps):
+        lst_cables = mp.get(catalog['landingpoints'], landingpoint)['value']['lstcables']
+        degree = lt.size(lst_cables)
+        if (degree == maxdeg): 
+            lt.addLast(lstmax_lp, landingpoint)
+            #agregar el nuevo a la lista
+        if(degree > maxdeg):
+            lstmax_lp = lt.newList(datastructure='ARRAY_LIST') 
+            lt.addLast(lstmax_lp, landingpoint)
+            maxdeg = degree
+            
+        print(landingpoint, degree, 'max', maxdeg)
+        print(lstmax_lp) #updetear el nuevo mayor
+    return lstmax_lp, maxdeg
 
+def getCapitalCity(catalog, country):
+    country_entry = mp.get(catalog['countries'], country)
+    capital_city = None
+    if country_entry is not None:
+        capital_city = country_entry['value']['CapitalName']
+    return capital_city
+
+def minimumDistanceCountries(catalog, capital_1, capital_2): 
     
+    catalog['paths'] =  djk.Dijkstra(catalog['internet_graph'], capital_1)
+    path_exists = djk.hasPathTo(catalog['paths'], capital_2)
+    
+    # print(catalog['paths']['visited'])
+
+    path = None
+    if path_exists:
+        path = djk.pathTo(catalog['paths'], capital_2)
+     
+    return path
+
+
+
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 def cmpLandingPoints(lp, lp_dict):
     lp_code = lp_dict['key']

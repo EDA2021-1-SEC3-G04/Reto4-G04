@@ -82,3 +82,12 @@ def calcConnectedComponents(catalog, lp1, lp2):
 
 def getLandingPointId(catalog, lp): 
     return model.getLandingPointId(catalog, lp)
+
+def pointsInterconnection(catalog):
+    return model.pointsInterconnection(catalog)
+
+def getCapitalCity(catalog, country):
+    return model.getCapitalCity(catalog, country)
+
+def minimumDistanceCountries(catalog, country_1, country_2): 
+    return model.minimumDistanceCountries(catalog, country_1, country_2)
