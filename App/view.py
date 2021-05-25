@@ -86,6 +86,11 @@ def optionThree(catalog):
     print(ans[0])
     print(ans[1])
 
+    print(lt.size(mp.get(catalog['landingpoints'], 'Sofia')['value']['lstcables']))
+    print(lt.size(mp.get(catalog['landingpoints'], '3221')['value']['lstcables']))
+    print(gr.adjacentEdges(catalog['internet_graph'], 'Sofia'))
+
+
 def optionFour(catalog, country_1, country_2):
     "Req 3"
     capital_1 = controller.getCapitalCity(catalog, country_1)
@@ -102,7 +107,7 @@ def optionFour(catalog, country_1, country_2):
 
 def optionFive(catalog):
     "Req 4"
-    pass
+    ans = controller.findGraphMST(catalog)
 
 
 def optionSix(catalog):
@@ -143,7 +148,7 @@ def thread_cycle():
             #     if 'Local Cable-15036' in x:
             #         print(x)
 
-            print(gr.adjacentEdges(catalog['internet_graph'], '5808'))
+            # print(gr.adjacentEdges(catalog['internet_graph'], '5808'))
             
 
             print('bog')

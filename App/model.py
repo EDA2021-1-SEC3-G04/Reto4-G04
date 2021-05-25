@@ -35,7 +35,9 @@ from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.ADT import stack
 from DISClib.Utils import error as error
+from DISClib.Algorithms.Graphs import prim
 import haversine as hs
+import time
 
 assert cf
 
@@ -291,17 +293,19 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
 
         current_lp = mp.get(catalog['landingpoints'], landingPt)['value']
         distance = calcHaversine(current_lp['info']['latitude'], current_lp['info']['longitude'], lat, lon) # Distancia entre capital y el LP actual
-        if country in current_lp['info']['name']:
+        if landingPt != capitalCity and country in current_lp['info']['name']:
+            # ! Carga CON LPs centrales
             addCable(catalog, landingPt, capitalCity, distance)
             createLocalCable(catalog, capitalCity, False)
             lst_cables = current_lp['lstcables']
             for cable in lt.iterator(lst_cables): 
+                # Conecta la capital tambien con los subvertices
                 if not('Local Cable' in cable) and not('Land Cable' in cable): # ! Solo se conecta a cables submarinos
                     lps_in_country = True  # * Si hay landinpoints en el pais de la capital
                     vertexA = formatVertex(current_lp['info']['landing_point_id'], cable)
                     # TODO: Ver que distance poner
                     addCable(catalog, vertexA, capitalCity, distance) # Agrega arco entre el vertice del LP (<lp>-<cable> y la capita)
-                    createLocalCable(catalog, capitalCity, False) # ! Va a agregar el cable entre capital al mapa -> bandwith y revisar nomrbe
+                    # createLocalCable(catalog, capitalCity, False) # ! Va a agregar el cable entre capital al mapa -> bandwith y revisar nomrbe
                     # TODO: lo de "El ancho de banda del cable de conexión a cada landing point de una ciudad capital se determinará como el valor del menor ancho de banda que llegan al landing point submarino."
         else:
             # * Si no el landpoint no esta en el pais, ver si esta más cerca que el anterior
@@ -314,8 +318,17 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
         # * Se crea el cable de la capital al lp submarino más cercano (conecta el LP Central)
         # print(capitalCity, 'cercano', closest_sub_lp, 'disantcia', min_distance )
         if (not closest_sub_lp == ""): 
+            # ! Carga CON LPs centrales
             addCable(catalog, closest_sub_lp, capitalCity, min_distance) 
             createLocalCable(catalog, closest_sub_lp, False)
+
+            # ! Carga SIN los LPs centrales
+            # lst_cables = mp.get(catalog['landingpoints'], closest_sub_lp)['value']['lstcables']
+            # for cable in lt.iterator(lst_cables):
+            #     if ('Local Cable'  not in cable) and ('Land Cable' not in cable):
+            #         addCable(catalog, closest_sub_lp+'-'+cable, capitalCity, min_distance)
+
+
         
 def calcHaversine(lat1, lon1, lat2, lon2):
     loc_1 = (float(lat1), float(lon1))
@@ -377,8 +390,9 @@ def pointsInterconnection(catalog):
             lt.addLast(lstmax_lp, landingpoint)
             maxdeg = degree
             
-        print(landingpoint, degree, 'max', maxdeg)
-        print(lstmax_lp) #updetear el nuevo mayor
+        # print(landingpoint, 'current', degree, 'max', maxdeg)
+        # print(lstmax_lp) #updetear el nuevo mayor
+        # time.sleep(2)
     return lstmax_lp, maxdeg
 
 def getCapitalCity(catalog, country):
@@ -417,4 +431,7 @@ def cmpLandingPoints(lp, lp_dict):
 
 # Funciones de ordenamiento
 
+def findGraphMST(catalog): 
+    mst = prim.PrimMST(catalog['internet_graph'])
 
+    print(mst['mst'])

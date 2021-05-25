@@ -91,3 +91,6 @@ def getCapitalCity(catalog, country):
 
 def minimumDistanceCountries(catalog, country_1, country_2): 
     return model.minimumDistanceCountries(catalog, country_1, country_2)
+
+def findGraphMST(catalog):
+    return model.findGraphMST(catalog)
