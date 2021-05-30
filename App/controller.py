@@ -94,3 +94,6 @@ def minimumDistanceCountries(catalog, country_1, country_2):
 
 def findGraphMST(catalog):
     return model.findGraphMST(catalog)
+
+def failureOfLP(catalog, landingpoint): 
+    return model.failureOfLP(catalog, landingpoint)
