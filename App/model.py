@@ -70,7 +70,7 @@ def initCatalog():
     catalog["cables"] = mp.newMap(numelements=14000, maptype='PROBING')
     catalog["countries"] = mp.newMap(numelements=14000, maptype='PROBING')
     catalog['internet_graph'] = gr.newGraph(datastructure='ADJ_LIST', 
-                                    directed=True, 
+                                    directed=False, 
                                     size=14000, 
                                     comparefunction= cmpLandingPoints)
     return catalog
@@ -100,7 +100,7 @@ def addConnections(catalog, connection):
     # ! TODO: checkdistance -> distancia entre los dos puntos o  el length?
     # addCable(catalog, origin, destination, cable_length)
     addCable(catalog, origin, destination, distance)  # * Agrega un cable con peso de distnace
-    addCable(catalog, destination, origin, distance)
+    # addCable(catalog, destination, origin, distance)
     addCableLanding(catalog, origin_lp, cable)  # * Agrega a lista de cables para un landinpoint
     addCableLanding(catalog, destination_lp, cable)
     
@@ -164,9 +164,9 @@ def addLandingPointConnections(catalog):
             cable = key + '-' + cable
             if prevCable is not None:
                 addCable(catalog, cable, prevCable, .1) # * Peso de estos cables = 100m = .1 km
-                addCable(catalog, prevCable, cable, .1) 
+                # addCable(catalog, prevCable, cable, .1) 
             addCable(catalog, key, cable, .1) # * Connecta LP central con todos los otros sub LPs
-            addCable(catalog, cable, key, .1)
+            # addCable(catalog, cable, key, .1)
             prevCable = cable
         createLocalCable(catalog, key, True) # 
         
@@ -306,7 +306,7 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
         if landingPt != capitalCity and country in current_lp['info']['name']:
             # ! Carga CON LPs centrales
             addCable(catalog, landingPt, capitalCity, distance)
-            addCable(catalog, capitalCity, landingPt, distance)
+            # addCable(catalog, capitalCity, landingPt, distance)
             createLocalCable(catalog, capitalCity, False)
             lst_cables = current_lp['lstcables']
             for cable in lt.iterator(mp.keySet(lst_cables)): 
@@ -318,7 +318,7 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
                     # TODO: Ver que distance poner
                     addCable(catalog, vertexA, capitalCity, distance) # Agrega arco entre el vertice del LP (<lp>-<cable> y la capita)
                     # createLocalCable(catalog, capitalCity, False) # ! Va a agregar el cable entre capital al mapa -> bandwith y revisar nomrbe
-                    addCable(catalog, capitalCity, vertexA, distance)
+                    # addCable(catalog, capitalCity, vertexA, distance)
                     # TODO: lo de "El ancho de banda del cable de conexión a cada landing point de una ciudad capital se determinará como el valor del menor ancho de banda que llegan al landing point submarino."
         else:
             # * Si no el landpoint no esta en el pais, ver si esta más cerca que el anterior
@@ -333,7 +333,7 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
         if (not closest_sub_lp == ""): 
             # ! Carga CON LPs centrales
             addCable(catalog, closest_sub_lp, capitalCity, min_distance) 
-            addCable(catalog, capitalCity, closest_sub_lp, min_distance) 
+            # addCable(catalog, capitalCity, closest_sub_lp, min_distance) 
             createLocalCable(catalog, closest_sub_lp, False)
 
             # ! Carga SIN los LPs centrales
@@ -435,7 +435,6 @@ def minimumDistanceCountries(catalog, capital_1, capital_2):
 # ==============================
 def findGraphMST(catalog): 
     # catalog['internet_graph']['directed'] = False # ? Prim solo sirve en grafos no dirigidos 
-    print(catalog['internet_graph']['directed'])
     mst_structure = prim.PrimMST(catalog['internet_graph'])
     mst_structure = prim.edgesMST(catalog['internet_graph'], mst_structure)
     mst = mst_structure['mst']
