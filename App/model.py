@@ -435,6 +435,7 @@ def minimumDistanceCountries(catalog, capital_1, capital_2):
 # ==============================
 def findGraphMST(catalog): 
     # catalog['internet_graph']['directed'] = False # ? Prim solo sirve en grafos no dirigidos 
+    print(catalog['internet_graph']['directed'])
     mst_structure = prim.PrimMST(catalog['internet_graph'])
     mst_structure = prim.edgesMST(catalog['internet_graph'], mst_structure)
     mst = mst_structure['mst']
