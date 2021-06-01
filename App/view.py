@@ -27,6 +27,7 @@ import controller
 from DISClib.ADT.graph import gr
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
+from DISClib.ADT import stack
 assert cf
 
 
@@ -86,10 +87,18 @@ def optionThree(catalog):
     ans = controller.pointsInterconnection(catalog)
     print(ans[0])
     print(ans[1])
+    # print(mp.keySet(mp.get(catalog['landingpoints'], 'Washington, D.C.')['value']['lstcables']))
 
+    # print(gr.adjacents(catalog['internet_graph'], 'Jakarta'))
+    # print(gr.adjacentEdges(catalog['internet_graph'], 'Jakarta'))
+    # ! MAPA de lstcables en vez de lista, Jakarta salia con 131 pero eran Land Cables
     # lista de landinpoints 
     # total cables conectados
+    for landinpoint in lt.iterator(ans[0]):
+        item = mp.get(catalog['landingpoints'], landinpoint)['value']['info']
+        print('Nombre:', item['id'], '\tLugar:', item['name'], '\tIdentificador: ', item['landing_point_id'])
 
+    print('\nHay', ans[1], 'cables conectados a dicho(s) landingpoints')
     # print(lt.size(mp.get(catalog['landingpoints'], 'Sofia')['value']['lstcables']))
     # print(lt.size(mp.get(catalog['landingpoints'], '3221')['value']['lstcables']))
     # print(gr.adjacentEdges(catalog['internet_graph'], 'Sofia'))
@@ -102,13 +111,13 @@ def optionFour(catalog, country_1, country_2):
     # print(capital_1, capital_2)
     if (capital_1 is not None) and (capital_2 is not None):
         
-        a = gr.getEdge(catalog['internet_graph'],'5693-Colombia-Florida Subsea Fiber (CFX-1)', '3563-Colombia-Florida Subsea Fiber (CFX-1)' )
-        b = gr.getEdge(catalog['internet_graph'],'3563-Colombia-Florida Subsea Fiber (CFX-1)', '3563-GigNet-1')
-        c = gr.getEdge(catalog['internet_graph'],'3563-GigNet-1', '3842-GigNet-1')
+        # a = gr.getEdge(catalog['internet_graph'],'5693-Colombia-Florida Subsea Fiber (CFX-1)', '3563-Colombia-Florida Subsea Fiber (CFX-1)' )
+        # b = gr.getEdge(catalog['internet_graph'],'3563-Colombia-Florida Subsea Fiber (CFX-1)', '3563-GigNet-1')
+        # c = gr.getEdge(catalog['internet_graph'],'3563-GigNet-1', '3842-GigNet-1')
 
-        print(a, '-->', b, '-->', c)
+        # print(a, '-->', b, '-->', c)
 
-        print(gr.getEdge(catalog['internet_graph'],'10398', '10398-SednaLink Fibre'))
+        # print(gr.getEdge(catalog['internet_graph'],'10398', '10398-SednaLink Fibre'))
 
         # ans = controller.minimumDistanceCountries(catalog, '5693', '3842')
         # ans = controller.minimumDistanceCountries(catalog, '10398', '10398-SednaLink Fibre')
@@ -116,8 +125,16 @@ def optionFour(catalog, country_1, country_2):
         # ans = controller.minimumDistanceCountries(catalog, '5693', '5693-Colombia-Florida Subsea Fiber (CFX-1)')
 
         # ans = controller.minimumDistanceCountries(catalog, 'Bogota', '5693')
-        ans = controller.minimumDistanceCountries(catalog, capital_1, capital_2)
-        print('path', ans)
+        path = controller.minimumDistanceCountries(catalog, capital_1, capital_2)
+        print("\nPresione 'enter' para ver el siguente\n")
+        total_dist = 0.0
+        while not stack.isEmpty(path):
+            edge = stack.pop(path)
+            total_dist += edge['weight']
+            print(edge['vertexA'] + "-->" + edge['vertexB'] + " costo: " + str(edge['weight']) + " km")
+            input()
+            
+        print('El costo total es de ', total_dist, 'km')
     else:
         print('Alguno de los paies no fue valido')
 
@@ -126,6 +143,7 @@ def optionFive(catalog):
     "Req 4"
     ans = controller.findGraphMST(catalog)
     print(ans)
+
 
 def optionSix(catalog, landingpoint):
     "Req 5"
@@ -148,8 +166,6 @@ def optionEight(catalog):
     pass
 
 
-
-
 def thread_cycle():
     while True:
         printMenu()
@@ -161,29 +177,7 @@ def thread_cycle():
             lps = lt.firstElement(mp.keySet(catalog["landingpoints"]))
             lp_info = mp.get(catalog["landingpoints"], lps)['value']['info']
             lp_infos = mp.get(catalog["landingpoints"], lps)['value']['lstcables']
-            # for x in lt.iterator(lp_infos):
-            #     print(gr.getEdge(catalog['internet_graph'], lp_info['landing_point_id'],lp_info['landing_point_id']+'-'+x))
             
-            # for x in lt.iterator(mp.keySet(catalog["cables"])):
-            #     # if 'Land' in x:
-            #         # print(x)
-                    
-            #     if 'Local Cable-15036' in x:
-            #         print(x)
-
-            # print(gr.adjacentEdges(catalog['internet_graph'], '5808'))
-            
-
-            print('bog')
-
-            # print(gr.adjacentEdges(catalog['internet_graph'], 'Bogota'))
-
-            for x in lt.iterator(gr.adjacentEdges(catalog['internet_graph'], 'Bogota')): 
-                print(x)
-            
-            # for x in lt.iterator(gr.adjacentEdges(catalog['internet_graph'], '5808')): 
-            #     print(x)
-    
             print("Cantidad de Landing Points: ", mp.size(catalog["landingpoints"]))
             print("Cantidad de conexiones entre Landing Points: ", gr.numEdges(catalog["internet_graph"]))
             print("Cantidad de paises: ", mp.size(catalog["countries"]))
@@ -216,7 +210,6 @@ def thread_cycle():
             optionFour(catalog, country_1, country_2)
 
         elif int(inputs[0]) == 5:
-            landingpoint = input('Ingrese el landinpoint: ')
             optionFive(catalog)
 
         elif int(inputs[0]) == 6:
