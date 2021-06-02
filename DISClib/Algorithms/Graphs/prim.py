@@ -134,7 +134,7 @@ def edgesMST(graph, search):
 
 def weightMST(graph, search):
     weight = 0.0
-    edgesMST(graph, search)
+    # edgesMST(graph, search)
     edges = search['mst']
     for edge in lt.iterator(edges):
         weight = weight + e.weight(edge)

@@ -1,7 +1,7 @@
 ﻿"""
  * Copyright 2020, Departamento de sistemas y Computación, Universidad
  * de Los Andes
- *
+ * 
  *
  * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
  *
@@ -22,6 +22,7 @@
 
 import config as cf
 import sys
+import folium
 import threading
 import controller
 from DISClib.ADT.graph import gr
@@ -142,13 +143,23 @@ def optionFour(catalog, country_1, country_2):
 def optionFive(catalog):
     "Req 4"
     ans = controller.findGraphMST(catalog)
-    print(ans)
+    print("El número de nodos conectados a la red de expansión mínima es: ", ans[0])
+    print("El costo total (distancia en [km]) de la red de expansión mínima es: ", ans[1])
+    print("La rama más larga que hace parte de la red de expansión mínima : ")
+    print(ans[2])
+    prevEdge = None
+    while not stack.isEmpty(ans[2][0]):
+        edge = stack.pop(ans[2][0])
+        if prevEdge is not None: 
+            print(prevEdge + "-->" + edge)
+        prevEdge = edge
 
+    print('Esta rama tiene', ans[2][1], 'arcos')
+    
 
 def optionSix(catalog, landingpoint):
     "Req 5"
     lp_id = controller.getLandingPointId(catalog, landingpoint)
-    print(lp_id)
     if lp_id is not None:
         ans = controller.failureOfLP(catalog, lp_id)
     else:

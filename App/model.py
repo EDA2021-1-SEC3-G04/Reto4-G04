@@ -34,6 +34,7 @@ from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT.graph import gr
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import bfs
 from DISClib.ADT import stack
 from DISClib.Utils import error as error
 from DISClib.Algorithms.Graphs import prim
@@ -172,7 +173,7 @@ def addLandingPointConnections(catalog):
         
     return catalog
 
-def createLocalCable(catalog, landingpoint, cableType): 
+def createLocalCable(catalog, landingpoint, cableType, dest=''): 
     """
     Determina cual es el cable de ancho de manda minimo para un landinpoint
     Se llama para crear el cable de la red local de un landinpoint
@@ -182,11 +183,13 @@ def createLocalCable(catalog, landingpoint, cableType):
     if cableType: 
         landingPointId = landingpoint.split('-')[0]  
         local_cable_name = 'Local Cable-' + landingPointId
+        cable_lst = mp.get(catalog['landingpoints'], landingPointId)
     else:
         landingPointId = landingpoint  
-        local_cable_name = 'Land Cable-' + landingPointId
+        local_cable_name = 'Land Cable-' + dest 
+        cable_lst = mp.get(catalog['landingpoints'], landingpoint)
 
-    cable_lst = mp.get(catalog['landingpoints'], landingPointId) # Saca la lista de cables de un LP (SOLO EL ID)
+     # Saca la lista de cables de un LP (SOLO EL ID)
 
     # if cable_lst is not None:
     # * Determinar el bandwith minimo (usando los cables que llegan a UN landinpoint (usa el mapa))
@@ -204,7 +207,10 @@ def createLocalCable(catalog, landingpoint, cableType):
     
     # ! ESTO SOLO SE DEBERIA HACER CON LOS CABLES QUE CONECTAN LP ! 
     # * Agrega el nuevo cable al mapa de de cables.
-    mp.put(cable_lst['value']['lstcables'], local_cable_name, -1)  # Agrega ese nuevo cable a la lista de cables de un landinpoint
+    if cableType:
+        mp.put(cable_lst['value']['lstcables'], local_cable_name, -1)  # Agrega ese nuevo cable a la lista de cables de un landinpoint
+    else:
+        mp.put(cable_lst['value']['lstcables'], local_cable_name, -1)
     # lt.addLast(cable_lst['value']['lstcables'], local_cable_name) 
     addCableInfo(catalog, {'capacityTBPS': min_bandwith, 'cable_name': local_cable_name, 'origin': landingpoint, 'destination': landingpoint})  # Agrega el cable local al MAPA de cables
 
@@ -307,7 +313,6 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
             # ! Carga CON LPs centrales
             addCable(catalog, landingPt, capitalCity, distance)
             # addCable(catalog, capitalCity, landingPt, distance)
-            createLocalCable(catalog, capitalCity, False)
             lst_cables = current_lp['lstcables']
             for cable in lt.iterator(mp.keySet(lst_cables)): 
             # for cable in lt.iterator(lst_cables): 
@@ -317,7 +322,8 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
                     vertexA = formatVertex(current_lp['info']['landing_point_id'], cable)
                     # TODO: Ver que distance poner
                     addCable(catalog, vertexA, capitalCity, distance) # Agrega arco entre el vertice del LP (<lp>-<cable> y la capita)
-                    # createLocalCable(catalog, capitalCity, False) # ! Va a agregar el cable entre capital al mapa -> bandwith y revisar nomrbe
+                    createLocalCable(catalog, capitalCity, False, landingPt) # ! Va a agregar el cable entre capital al mapa -> bandwith y revisar nomrbe
+                    createLocalCable(catalog, landingPt, False, capitalCity)
                     # addCable(catalog, capitalCity, vertexA, distance)
                     # TODO: lo de "El ancho de banda del cable de conexión a cada landing point de una ciudad capital se determinará como el valor del menor ancho de banda que llegan al landing point submarino."
         else:
@@ -334,7 +340,7 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
             # ! Carga CON LPs centrales
             addCable(catalog, closest_sub_lp, capitalCity, min_distance) 
             # addCable(catalog, capitalCity, closest_sub_lp, min_distance) 
-            createLocalCable(catalog, closest_sub_lp, False)
+            createLocalCable(catalog, closest_sub_lp, False, capitalCity)
 
             # ! Carga SIN los LPs centrales
             # lst_cables = mp.get(catalog['landingpoints'], closest_sub_lp)['value']['lstcables']
@@ -442,24 +448,14 @@ def findGraphMST(catalog):
     edgesTo = mst_structure['edgeTo']
     mst_weight = prim.weightMST(catalog['internet_graph'], mst_structure)
 
-
-    # 'mst' has all the edges in the mest
-
-    # edgesTo has how to get somewhere but you dont know that somewhere
-    # for x in lt.iterator(mst): 
-    #     print(x)
-    # for y in lt.iterator(mp.keySet(edgesTo)):  
-    #     print(mp.get(edgesTo, y))
-
     nodes = lt.size(mst)
-    print('nodes v2', lt.size(edgesTo))
-    print('first elements', lt.firstElement(mst))
+    # print('nodes v2', lt.size(edgesTo))
+    # print('first elements', lt.firstElement(mst))
     mst_graph = createMSTgraph(catalog, mst)
-    
-    longest_branch = longestBranch(mst_graph)
 
-    return nodes,  mst_weight
+    path = getMSTroots(catalog, mst_graph)
 
+    return nodes, mst_weight, path
 
 
 def createMSTgraph(catalog, mst): 
@@ -478,25 +474,65 @@ def createMSTgraph(catalog, mst):
         if edge is None:
             gr.addEdge(catalog['mst'], vertexA, vertexB, weight)
             # gr.addEdge(catalog['mst'], vertexB, vertexA, weight)
-    print(lt.size(gr.vertices(catalog['mst'])))
+    print('mst vertices', lt.size(gr.vertices(catalog['mst'])))
     return catalog['mst']
 
-def longestBranch(mst_graph): 
-    roots = lt.newList(datastructure='ARRAY_LIST') #! cambiar a tad
+def getMSTroots(catalog, mst_graph):
+    
+    roots = lt.newList(datastructure='ARRAY_LIST') #! 
     mst_vertices = gr.vertices(mst_graph)
     i = 0
     # * Finds all 'roots' of the MST  (Nodes with an indegree of 0)
     while i <= lt.size(mst_vertices): 
         vertex = lt.getElement(mst_vertices, i)
         indegree = gr.indegree(mst_graph, vertex)
-        if indegree == 0: 
+        outdegree = gr.outdegree(mst_graph, vertex)
+        if indegree == 0 and outdegree > 0:
+            print(vertex, indegree, gr.outdegree(mst_graph, vertex))
             lt.addLast(roots, vertex)
         i += 1
     print(roots)
-    root = lt.firstElement(roots)
+    
+    longest_branch_dist = 0
+    longest_branch_bfs = None
+    for root in lt.iterator(roots):
+        print('====', root)
+        info = longestBranch(catalog, mst_graph, root)
+        if info[0] > longest_branch_dist: 
+            longest_branch_dist = info[0]
+            end_vertex = info[1]
+            longest_branch_bfs = info[2]
 
     
+    path = bfs.pathTo(longest_branch_bfs, end_vertex)
+    
+    print(longest_branch_dist,  end_vertex)
+    
+    return path, longest_branch_dist
 
+def longestBranch(catalog, mst_graph, root): 
+
+    bfs_structure = bfs.BreadhtFisrtSearch(mst_graph, root)
+    keySet = mp.keySet(bfs_structure['visited'])
+    max_dist = 0
+    end_vertex = None
+    for vertex in lt.iterator(keySet):
+        vertex_info = mp.get(bfs_structure['visited'], vertex)['value']
+        dist_to = vertex_info['distTo']
+
+        if dist_to > max_dist: 
+            max_dist = dist_to
+            end_vertex = vertex
+        
+        if gr.indegree(mst_graph, vertex) == 0: 
+            print(vertex)
+    
+    longest_path = bfs.hasPathTo(bfs_structure, end_vertex)
+    print('rta', end_vertex, max_dist)
+    print(longest_path)
+    print('indegree of end', gr.indegree(mst_graph, end_vertex))
+
+    return max_dist, end_vertex, bfs_structure
 
     
 
@@ -505,22 +541,28 @@ def longestBranch(mst_graph):
 # REQUERIMIENTO 5
 # ==============================
 def failureOfLP(catalog, landingpoint):
+    lp_entry = mp.get(catalog['landingpoints'], landingpoint)
+    lst_cities = lt.newList(datastructure='ARRAY_LIST')
+    if lp_entry is not None: 
+        cables = lp_entry['value']['lstcables']
+        for cable in lt.iterator(mp.keySet(cables)):
+            if 'Land Cable' in cable:
+               lt.addLast(lst_cities, cable.split('-')[1:])
+            elif not 'Local Cable' in cable:
+                vertex = landingpoint + "-" + cable
+                adjacents = gr.adjacents(catalog['internet_graph'], vertex)
+                print('adjs')
+                # * no tener el cuenta el landinpoint que llega por param
+                # * toca ver para cada adjacente si tiene un Land Cable con alguna Ciudad
+                for adj_vertex in lt.iterator(adjacents):
+                    print(cable)
+                    if 'Land Cable' in cable:
+                        lt.addLast(lst_cities, cable.split('-')[1:])
+                        
+                        
+    print(lst_cities)
+    
 
-    adjacents = gr.adjacents(catalog['internet_graph'], landingpoint)
-    vert = lt.firstElement(adjacents)
-    vert_adjs_ed = gr.adjacentEdges(catalog['internet_graph'], vert)
-    vert_adjs = gr.adjacents(catalog['internet_graph'], vert)
-
-    print(vert_adjs_ed)
-    print(vert_adjs)
-
-    # print(mp.get(catalog['landingpoints'], landingpoint)['value']['lstcables'])
-    # input()
-    # for vert in lt.iterator(adjacents): 
-        
-        # for cable in lt.iterator(cables): 
-        #     if 'Land Cable' in cable:
-        #         print(cable)
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
