@@ -88,21 +88,39 @@ def optionThree(catalog):
     ans = controller.pointsInterconnection(catalog)
     print(ans[0])
     print(ans[1])
-    # print(mp.keySet(mp.get(catalog['landingpoints'], 'Washington, D.C.')['value']['lstcables']))
-
-    # print(gr.adjacents(catalog['internet_graph'], 'Jakarta'))
-    # print(gr.adjacentEdges(catalog['internet_graph'], 'Jakarta'))
-    # ! MAPA de lstcables en vez de lista, Jakarta salia con 131 pero eran Land Cables
-    # lista de landinpoints 
-    # total cables conectados
+    item_map = folium.Map(location=[25.557547, -24.568953], zoom_start=2)
     for landinpoint in lt.iterator(ans[0]):
         item = mp.get(catalog['landingpoints'], landinpoint)['value']['info']
         print('Nombre:', item['id'], '\tLugar:', item['name'], '\tIdentificador: ', item['landing_point_id'])
+        tooltip = item['id']
+        item_lat = float(item['latitude'])
+        item_lon = float(item['longitude'])
+        cables = mp.get(catalog['landingpoints'], landinpoint)['value']['lstcables']
+        folium.Marker(location=[item_lat, item_lon], popup="<strong></strong>", tooltip=tooltip).add_to(item_map)
+        for cable in lt.iterator(mp.keySet(cables)): 
+            cable = cable.split('-')[1:][0]
+            cable_info = mp.get(catalog['landingpoints'], cable)['value']['info']
+            cable_lat = float(cable_info['latitude'])
+            cable_lon = float(cable_info['longitude'])
+            tooltip_2 = cable_info['name']
+            folium.Marker(location=[cable_lat, cable_lon], popup="<strong></strong>", tooltip=tooltip_2, color='red').add_to(item_map)
+            folium.PolyLine([(item_lat, item_lon), (cable_lat, cable_lon)],
+                color='grey',
+                weight=2,
+                opacity=0.6).add_to(item_map)
+
+
+        
+
+    item_map.save('Req 2.html')    
 
     print('\nHay', ans[1], 'cables conectados a dicho(s) landingpoints')
     # print(lt.size(mp.get(catalog['landingpoints'], 'Sofia')['value']['lstcables']))
     # print(lt.size(mp.get(catalog['landingpoints'], '3221')['value']['lstcables']))
     # print(gr.adjacentEdges(catalog['internet_graph'], 'Sofia'))
+
+    
+    
 
 
 def optionFour(catalog, country_1, country_2):
@@ -127,17 +145,20 @@ def optionFour(catalog, country_1, country_2):
 
         # ans = controller.minimumDistanceCountries(catalog, 'Bogota', '5693')
         path = controller.minimumDistanceCountries(catalog, capital_1, capital_2)
-        print("\nPresione 'enter' para ver el siguente\n")
-        total_dist = 0.0
-        while not stack.isEmpty(path):
-            edge = stack.pop(path)
-            total_dist += edge['weight']
-            print(edge['vertexA'] + "-->" + edge['vertexB'] + " costo: " + str(edge['weight']) + " km")
-            input()
+        if path is not None:
+            print("\nPresione 'enter' para ver el siguente\n")
+            total_dist = 0.0
+            while not stack.isEmpty(path):
+                edge = stack.pop(path)
+                total_dist += edge['weight']
+                print(edge['vertexA'] + "-->" + edge['vertexB'] + " costo: " + str(edge['weight']) + " km")
+                input()
+        else:
+            print('No existe el camino entre', capital_1, 'y', capital_2)
             
         print('El costo total es de ', total_dist, 'km')
     else:
-        print('Alguno de los paies no fue valido')
+        print('Alguno de los paises no fue valido')
 
 
 def optionFive(catalog):
@@ -162,6 +183,9 @@ def optionSix(catalog, landingpoint):
     lp_id = controller.getLandingPointId(catalog, landingpoint)
     if lp_id is not None:
         ans = controller.failureOfLP(catalog, lp_id)
+        print('Hay', lt.size(ans), 'paises afectados')
+        for country in lt.iterator(ans): 
+            print('Pais:', country['country'], '\t Distancia:', country['distance'], 'km')
     else:
         print('El landingpoint no es válido')
     pass
@@ -203,7 +227,6 @@ def thread_cycle():
             print('Primer pais')
             print('CountryName: ', country_info['CountryName'], "Population: ", country_info['Population'], "Internet users: ", country_info['Internet users'])
 
-            
         elif int(inputs[0]) == 2:
             lp1 = input('Ingrese el nombre del primer landing point: ')
             lp2 = input('Ingrese el nombre del segundo landing point: ')
