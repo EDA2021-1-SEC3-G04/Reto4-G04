@@ -321,12 +321,10 @@ def createLandCable(catalog, country, capitalCity, lat, lon):
                 if not('Local Cable' in cable) and not('Land Cable' in cable): # ! Solo se conecta a cables submarinos
                     lps_in_country = True  # * Si hay landinpoints en el pais de la capital
                     vertexA = formatVertex(current_lp['info']['landing_point_id'], cable)
-                    # TODO: Ver que distance poner
-                    addCable(catalog, vertexA, capitalCity, distance) # Agrega arco entre el vertice del LP (<lp>-<cable> y la capita)
-                    createLocalCable(catalog, capitalCity, False, landingPt) # ! Va a agregar el cable entre capital al mapa -> bandwith y revisar nomrbe
+                    addCable(catalog, vertexA, capitalCity, distance) # Agrega arco entre el vertice del LP (<lp>-<cable> y la capital)
+                    createLocalCable(catalog, capitalCity, False, landingPt) 
                     createLocalCable(catalog, landingPt, False, capitalCity)
                     # addCable(catalog, capitalCity, vertexA, distance)
-                    # TODO: lo de "El ancho de banda del cable de conexión a cada landing point de una ciudad capital se determinará como el valor del menor ancho de banda que llegan al landing point submarino."
         else:
             # * Si no el landpoint no esta en el pais, ver si esta más cerca que el anterior
             if distance < min_distance: 
@@ -361,31 +359,12 @@ def formatVertex(origin, cable):
     name = origin + '-' + cable
     return name
 
-# Construccion de modelos
-
-# Funciones para agregar informacion al catalogo
-# ==============================
-# REQUERIMIENTO 1
-# ==============================
-def calcConnectedComponents(catalog, lp1, lp2): 
-    """
-    Usa el algoritmo de Kosaraju Para calcular los componentes connectados del grafo.
-    El numero de clusters (componenetes conectados)  y si dos lps estan fuertemente conectados (pertencecen al mismo cluster)
-    """
-    catalog['components'] = scc.KosarajuSCC(catalog['internet_graph'])
-    num_clusters = scc.connectedComponents(catalog['components'])
-    landpts_cluster = scc.stronglyConnected(catalog['components'], lp1, lp2)
-    return num_clusters, landpts_cluster
-
-# Funciones para creacion de datos
-
-# Funciones de consulta
-
-
 def getLandingPointId(catalog, lp): 
     """
     Dado un landinpoint (Ej. Redondo Beach) retorna el su identificador (id)
     Como el usuario solo da parte del nombre del landinpoint (Ej. Redondo Beach en verdad es Redondo Beach, CA, United States, toca usar la función de in para revisar que el string este dentro del nombre completo)
+
+    ! Req 1 y 5
     """
     lp_id = None
     lst_name = mp.keySet(catalog['lp_names'])
@@ -400,6 +379,30 @@ def getLandingPointId(catalog, lp):
 
     return lp_id
 
+
+def getCapitalCity(catalog, country):
+    """Dado un pais, retorna su capital 
+
+    ! Req 3
+    """
+    country_entry = mp.get(catalog['countries'], country)
+    capital_city = None
+    if country_entry is not None:
+        capital_city = country_entry['value']['CapitalName']
+    return capital_city
+
+# ==============================
+# REQUERIMIENTO 1
+# ==============================
+def calcConnectedComponents(catalog, lp1, lp2): 
+    """
+    Usa el algoritmo de Kosaraju Para calcular los componentes connectados del grafo.
+    El numero de clusters (componenetes conectados)  y si dos lps estan fuertemente conectados (pertencecen al mismo cluster)
+    """
+    catalog['components'] = scc.KosarajuSCC(catalog['internet_graph'])
+    num_clusters = scc.connectedComponents(catalog['components'])
+    landpts_cluster = scc.stronglyConnected(catalog['components'], lp1, lp2)
+    return num_clusters, landpts_cluster
 
 # ==============================
 # REQUERIMIENTO 2
@@ -423,19 +426,9 @@ def pointsInterconnection(catalog):
     return lstmax_lp, maxdeg
 
 
-
 # ==============================
 # REQUERIMIENTO 3
 # ==============================
-
-def getCapitalCity(catalog, country):
-    """Dado un pais, retorna su capital"""
-    country_entry = mp.get(catalog['countries'], country)
-    capital_city = None
-    if country_entry is not None:
-        capital_city = country_entry['value']['CapitalName']
-    return capital_city
-
 def minimumDistanceCountries(catalog, capital_1, capital_2): 
     """
     Usa el algoritmo de Dijkstra para calcular los caminos mas baratos desde la capital 1
@@ -483,7 +476,7 @@ def createMSTgraph(catalog, mst):
     return catalog['mst']
 
 def getMSTroots(catalog, mst_graph):
-    roots = lt.newList(datastructure='ARRAY_LIST') #! 
+    roots = lt.newList(datastructure='ARRAY_LIST') 
     mst_vertices = gr.vertices(mst_graph)
     i = 0
     # * Ecuentra todas las 'raices' del MST (nodos/vertices con un indegree de 0) 
@@ -494,7 +487,6 @@ def getMSTroots(catalog, mst_graph):
         if indegree == 0 and outdegree > 0: # Outdegree > 0 para asegurar que si se conecta con algo más
             lt.addLast(roots, vertex)
         i += 1
-    
 
     longest_branch_dist = 0
     longest_branch_bfs = None
@@ -524,13 +516,7 @@ def longestBranch(catalog, mst_graph, root):
         if dist_to > max_dist: 
             max_dist = dist_to
             end_vertex = vertex
-        
-        if gr.indegree(mst_graph, vertex) == 0: 
-
     return max_dist, end_vertex, bfs_structure
-
-    
-
 
 # ==============================
 # REQUERIMIENTO 5
@@ -597,6 +583,7 @@ def locateLPs(catalog, lst_lps):
             i += 1
     return lst_affected_countries
 
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 def cmpLandingPoints(lp, lp_dict):
     lp_code = lp_dict['key']
@@ -608,7 +595,7 @@ def cmpLandingPoints(lp, lp_dict):
         return -1
 
 def sortCountries(country_1, country_2):
-    "Funcion de comparación para ordenar las distancia en orden descendente"
+    """Funcion de comparación para ordenar las distancia en orden descendente"""
     dist_1 = country_1["distance"]
     dist_2 = country_2["distance"]
     return dist_1 > dist_2

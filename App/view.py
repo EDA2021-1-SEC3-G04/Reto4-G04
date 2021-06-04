@@ -111,12 +111,16 @@ def optionThree(catalog):
     for landinpoint in lt.iterator(ans[0]):
         item = mp.get(catalog['landingpoints'], landinpoint)['value']['info']
         print('Nombre:', item['id'], '\tLugar:', item['name'], '\tIdentificador: ', item['landing_point_id'])
+
         tooltip = item['id']
         item_lat = float(item['latitude'])
         item_lon = float(item['longitude'])
         cables = mp.get(catalog['landingpoints'], landinpoint)['value']['lstcables']
         folium.Marker(location=[item_lat, item_lon], popup="<strong></strong>", tooltip=tooltip, icon=folium.Icon(color='darkred', icon = 'cloud')).add_to(item_map)
+
         for cable in lt.iterator(mp.keySet(cables)): 
+            # * Markers y conectors entre el lp actual y todas sus conexiones
+
             cable = cable.split('-')[1:][0]
             cable_info = mp.get(catalog['landingpoints'], cable)['value']['info']
             cable_lat = float(cable_info['latitude'])
@@ -136,13 +140,12 @@ def optionFour(catalog, country_1, country_2):
     "Req 3 - Dijkstra"
     capital_1 = controller.getCapitalCity(catalog, country_1)
     capital_2 = controller.getCapitalCity(catalog, country_2)
-    # print(capital_1, capital_2)
     if (capital_1 is not None) and (capital_2 is not None):
-        
         path = controller.minimumDistanceCountries(catalog, capital_1, capital_2)
         if path is not None:
             path_folium = path.copy()
             printMapDijkstra(catalog, path_folium)
+
             print("\nPresione 'enter' para ver el siguente\n")
             total_dist = 0.0
             while not stack.isEmpty(path):
@@ -162,6 +165,8 @@ def printMapDijkstra(catalog, path):
     """
     Usa la libreria de folium para crear un mapa que muestra el camino entre las capitales de los dos paises
     """
+
+    # Datos de la primera capital al primer lp (Las captales van de rojo!)
     firstElement = stack.pop(path)
     vertexA = firstElement['vertexA'] # Primera Capital
     vertexB = firstElement['vertexB'].split('-')[:1][0]
@@ -181,6 +186,7 @@ def printMapDijkstra(catalog, path):
                 opacity=0.6).add_to(item_map)
 
     while stack.size(path) > 1:
+        # Conexiones entre todos los lps del medio (mismo color para todos)
         element = stack.pop(path)
         vertexA = element['vertexA'].split('-')[:1][0]# Primera Capital
         vertexB = element['vertexB'].split('-')[:1][0]
@@ -195,6 +201,8 @@ def printMapDijkstra(catalog, path):
                     weight=5,
                     opacity=0.6).add_to(item_map)
     
+
+     # Datos de el ulitmo LP a la capital (las capitales van de rojo)
     lastElement = stack.pop(path)
     vertexA = lastElement['vertexA'].split('-')[:1][0] 
     vertexB = lastElement['vertexB'] # Ultima Capital
@@ -210,8 +218,6 @@ def printMapDijkstra(catalog, path):
 
 
     item_map.save('Req 3.html')
-    
-
 
 def optionFive(catalog):
     "Req 4"
@@ -239,17 +245,15 @@ def optionSix(catalog, landingpoint):
         lp_info = mp.get(catalog['landingpoints'], lp_id)['value']['info']
         
         item_map = folium.Map(location=[float(lp_info['latitude']), float(lp_info['longitude'])], zoom_start=3)
-
         lp_lat = float(lp_info['latitude'])
         lp_lon = float(lp_info['longitude'])
-
         folium.Marker(location=[lp_lat, lp_lon], tooltip=lp_info['name'], icon=folium.Icon(color='darkred')).add_to(item_map)
 
         print('Hay', lt.size(ans), 'paises afectados')
         for country in lt.iterator(ans): 
             print('Pais:', country['country'], '\t Distancia:', country['distance'], 'km')
 
-            
+            # Marker para cada pais, y conexion con el LP que fallo
             folium.Marker(location=[float(country['CapitalLatitude']), float(country['CapitalLongitude'])], tooltip=country['country'], icon=folium.Icon(color='lightblue')).add_to(item_map)
             folium.PolyLine([(lp_lat, lp_lon), (float(country['CapitalLatitude']), float(country['CapitalLongitude']))],
                 color='gray',
