@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_252174fea7dc4b34a0326d5aa9b18931 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>    
+    
+            <div class="folium-map" id="map_252174fea7dc4b34a0326d5aa9b18931" ></div>
+        
+</body>
+<script>    
+    
+            var map_252174fea7dc4b34a0326d5aa9b18931 = L.map(
+                "map_252174fea7dc4b34a0326d5aa9b18931",
+                {
+                    center: [4.6, -74.083333],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 5,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_aac1596e2e184e3faa7d9718a188a8e8 = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_1419603043174dff81dd6bd70b9b2f99 = L.marker(
+                [4.6, -74.083333],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_b757fd45fed24c9e852deeaf5114f7f3 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "darkred", "prefix": "glyphicon"}
+            );
+            marker_1419603043174dff81dd6bd70b9b2f99.setIcon(icon_b757fd45fed24c9e852deeaf5114f7f3);
+        
+    
+            marker_1419603043174dff81dd6bd70b9b2f99.bindTooltip(
+                `<div>
+                     Bogota Land LP Colombia
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_77c90221480d4143af895ecd1b5b6ccc = L.marker(
+                [3.883675, -77.040301],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_3204f05b19ad4908a28e80ed5257979d = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_77c90221480d4143af895ecd1b5b6ccc.setIcon(icon_3204f05b19ad4908a28e80ed5257979d);
+        
+    
+            marker_77c90221480d4143af895ecd1b5b6ccc.bindTooltip(
+                `<div>
+                     Buenaventura, Colombia
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_b7005a772f124b5caae8191af40c7cc5 = L.polyline(
+                [[4.6, -74.083333], [3.883675, -77.040301]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_c8576c99ee1340f2b176ef3c5f54f130 = L.marker(
+                [3.883675, -77.040301],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_cdad6a7d5ee8489782736e691aa18159 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_c8576c99ee1340f2b176ef3c5f54f130.setIcon(icon_cdad6a7d5ee8489782736e691aa18159);
+        
+    
+            marker_c8576c99ee1340f2b176ef3c5f54f130.bindTooltip(
+                `<div>
+                     Buenaventura, Colombia
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_f1e30e0ac5d640ac8aa8243ba146458f = L.marker(
+                [9.35372, -79.900028],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_e80726083c9b41ecac7e618e69f6ff30 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_f1e30e0ac5d640ac8aa8243ba146458f.setIcon(icon_e80726083c9b41ecac7e618e69f6ff30);
+        
+    
+            marker_f1e30e0ac5d640ac8aa8243ba146458f.bindTooltip(
+                `<div>
+                     Colon, Panama
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_e0641f5746ef40bda5763d25904e7d1d = L.polyline(
+                [[3.883675, -77.040301], [9.35372, -79.900028]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_b2f0dc4a07d44ac8a6182ff7729965cd = L.marker(
+                [9.35372, -79.900028],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_f4a04bf11b844dfe904c711472312010 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_b2f0dc4a07d44ac8a6182ff7729965cd.setIcon(icon_f4a04bf11b844dfe904c711472312010);
+        
+    
+            marker_b2f0dc4a07d44ac8a6182ff7729965cd.bindTooltip(
+                `<div>
+                     Colon, Panama
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_d2d4abce40a24e5f965d2627d21bac48 = L.marker(
+                [8.966666666666667, -79.533333],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_d23cd89aefa645ff9095e1312573e514 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_d2d4abce40a24e5f965d2627d21bac48.setIcon(icon_d23cd89aefa645ff9095e1312573e514);
+        
+    
+            marker_d2d4abce40a24e5f965d2627d21bac48.bindTooltip(
+                `<div>
+                     Panama City Land LP Panama
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_0239800d11ae4c85a8fef617b0786892 = L.polyline(
+                [[9.35372, -79.900028], [8.966666666666667, -79.533333]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_df3b3396d2c2477e8c767f20ee539abe = L.marker(
+                [8.966666666666667, -79.533333],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_59e3db76ba214b54a9ecdeea6b98495e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_df3b3396d2c2477e8c767f20ee539abe.setIcon(icon_59e3db76ba214b54a9ecdeea6b98495e);
+        
+    
+            marker_df3b3396d2c2477e8c767f20ee539abe.bindTooltip(
+                `<div>
+                     Panama City Land LP Panama
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_b102782c33f84a98a553214ae0a3e9ec = L.marker(
+                [8.950027, -79.566678],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_1463c400abc04084ace1729b36afe446 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_b102782c33f84a98a553214ae0a3e9ec.setIcon(icon_1463c400abc04084ace1729b36afe446);
+        
+    
+            marker_b102782c33f84a98a553214ae0a3e9ec.bindTooltip(
+                `<div>
+                     Balboa, Panama
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_93443abc0722407d997c05559d54b6ba = L.polyline(
+                [[8.966666666666667, -79.533333], [8.950027, -79.566678]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_c1b7cc2f2fb546f99cd0e73f9f617cb8 = L.marker(
+                [8.950027, -79.566678],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_6adb62c8199b4068b673d77acd377efd = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_c1b7cc2f2fb546f99cd0e73f9f617cb8.setIcon(icon_6adb62c8199b4068b673d77acd377efd);
+        
+    
+            marker_c1b7cc2f2fb546f99cd0e73f9f617cb8.bindTooltip(
+                `<div>
+                     Balboa, Panama
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_9fb80728a4684015ba8fbd38807268c3 = L.marker(
+                [33.91992, -118.415955],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_80b619160f734e21a9b677b03b5d28bf = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_9fb80728a4684015ba8fbd38807268c3.setIcon(icon_80b619160f734e21a9b677b03b5d28bf);
+        
+    
+            marker_9fb80728a4684015ba8fbd38807268c3.bindTooltip(
+                `<div>
+                     El Segundo, CA, United States
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_40c952b689c8406e9d859f7e2aa4d5f7 = L.polyline(
+                [[8.950027, -79.566678], [33.91992, -118.415955]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_a2363b936fda494c8366ae47a7a385e8 = L.marker(
+                [33.91992, -118.415955],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_6ccc2b87b6f44d5998d46babdc401922 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_a2363b936fda494c8366ae47a7a385e8.setIcon(icon_6ccc2b87b6f44d5998d46babdc401922);
+        
+    
+            marker_a2363b936fda494c8366ae47a7a385e8.bindTooltip(
+                `<div>
+                     El Segundo, CA, United States
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_23caf0c396db45bdb7366aebbe62524c = L.marker(
+                [33.91992, -118.415955],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_e2cc403253c647edb2f69c7b6192d171 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_23caf0c396db45bdb7366aebbe62524c.setIcon(icon_e2cc403253c647edb2f69c7b6192d171);
+        
+    
+            marker_23caf0c396db45bdb7366aebbe62524c.bindTooltip(
+                `<div>
+                     El Segundo, CA, United States
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_e847e4e1f9b94a2b97362801b0aa51f0 = L.polyline(
+                [[33.91992, -118.415955], [33.91992, -118.415955]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_7dbbfbdc186144f5816857d546f7d632 = L.marker(
+                [33.91992, -118.415955],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_886980fbcdab4a70b5845718c8819a7a = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_7dbbfbdc186144f5816857d546f7d632.setIcon(icon_886980fbcdab4a70b5845718c8819a7a);
+        
+    
+            marker_7dbbfbdc186144f5816857d546f7d632.bindTooltip(
+                `<div>
+                     El Segundo, CA, United States
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_6adbc73e8f374e6d877fb94bb9021e8a = L.marker(
+                [15.761529, 121.560182],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_468985f136de4b5891441c3e9e274319 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_6adbc73e8f374e6d877fb94bb9021e8a.setIcon(icon_468985f136de4b5891441c3e9e274319);
+        
+    
+            marker_6adbc73e8f374e6d877fb94bb9021e8a.bindTooltip(
+                `<div>
+                     Baler, Philippines
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_7d4d208879fb4715bb35b3096579432d = L.polyline(
+                [[33.91992, -118.415955], [15.761529, 121.560182]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_c018a4ac134d455aba01521d0caa3f84 = L.marker(
+                [15.761529, 121.560182],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_5127450c065648de9064502c28a47f28 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_c018a4ac134d455aba01521d0caa3f84.setIcon(icon_5127450c065648de9064502c28a47f28);
+        
+    
+            marker_c018a4ac134d455aba01521d0caa3f84.bindTooltip(
+                `<div>
+                     Baler, Philippines
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_6c101ebecd7f4d63ae0458c72df5a1a1 = L.marker(
+                [14.6, 120.966667],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_2bb7519eb0e34276a3d0cb7a23fd29ab = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_6c101ebecd7f4d63ae0458c72df5a1a1.setIcon(icon_2bb7519eb0e34276a3d0cb7a23fd29ab);
+        
+    
+            marker_6c101ebecd7f4d63ae0458c72df5a1a1.bindTooltip(
+                `<div>
+                     Manila Land LP Philippines
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_0b0a0e8db2754ea48ccaad4a064a0dac = L.polyline(
+                [[15.761529, 121.560182], [14.6, 120.966667]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_7ff000f1c7254d3aab6bc146a5d63290 = L.marker(
+                [14.6, 120.966667],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_2b9b9da9bc814bf3b906e1c4d6ae578b = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_7ff000f1c7254d3aab6bc146a5d63290.setIcon(icon_2b9b9da9bc814bf3b906e1c4d6ae578b);
+        
+    
+            marker_7ff000f1c7254d3aab6bc146a5d63290.bindTooltip(
+                `<div>
+                     Manila Land LP Philippines
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_f263829b5c364e819989cd9b01e7f354 = L.marker(
+                [13.765553, 121.06493],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_36aa53fda08946848e0e8a0444c0ddd6 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_f263829b5c364e819989cd9b01e7f354.setIcon(icon_36aa53fda08946848e0e8a0444c0ddd6);
+        
+    
+            marker_f263829b5c364e819989cd9b01e7f354.bindTooltip(
+                `<div>
+                     Batangas, Philippines
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_45d5786f23d34db4b02249b0e007d61e = L.polyline(
+                [[14.6, 120.966667], [13.765553, 121.06493]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_10a1a702f0634f7a90289273f7ec97ba = L.marker(
+                [13.765553, 121.06493],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_0b7b514c8cf84abd96265a9618e450d2 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_10a1a702f0634f7a90289273f7ec97ba.setIcon(icon_0b7b514c8cf84abd96265a9618e450d2);
+        
+    
+            marker_10a1a702f0634f7a90289273f7ec97ba.bindTooltip(
+                `<div>
+                     Batangas, Philippines
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_73cb5667571e4958bac3472afa17d1b4 = L.marker(
+                [-6.129363, 106.833299],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_173a615c0bcd4e908e493648a3a0c044 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_73cb5667571e4958bac3472afa17d1b4.setIcon(icon_173a615c0bcd4e908e493648a3a0c044);
+        
+    
+            marker_73cb5667571e4958bac3472afa17d1b4.bindTooltip(
+                `<div>
+                     Ancol, Indonesia
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_e6afbcf405094268b2f6adbee03aee6d = L.polyline(
+                [[13.765553, 121.06493], [-6.129363, 106.833299]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var marker_8901987ae87f4c7d92544818963b8817 = L.marker(
+                [-6.166666666666667, 106.816667],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_ff840b5a965949b7932db0f9a7f23c01 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cloud", "iconColor": "white", "markerColor": "darkred", "prefix": "glyphicon"}
+            );
+            marker_8901987ae87f4c7d92544818963b8817.setIcon(icon_ff840b5a965949b7932db0f9a7f23c01);
+        
+    
+            marker_8901987ae87f4c7d92544818963b8817.bindTooltip(
+                `<div>
+                     Jakarta Land LP Indonesia
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_49629ceb77814daba33635b7236c2b03 = L.marker(
+                [-6.129363, 106.833299],
+                {}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+    
+            var icon_94d1413d94c2420e9582dcbde12513d6 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "lightgray", "prefix": "glyphicon"}
+            );
+            marker_49629ceb77814daba33635b7236c2b03.setIcon(icon_94d1413d94c2420e9582dcbde12513d6);
+        
+    
+            marker_49629ceb77814daba33635b7236c2b03.bindTooltip(
+                `<div>
+                     Ancol, Indonesia
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_312e3950772b4f0697f2d4aa29d3bfbf = L.polyline(
+                [[-6.129363, 106.833299], [-6.166666666666667, 106.816667]],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "gray", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_252174fea7dc4b34a0326d5aa9b18931);
+        
+</script>

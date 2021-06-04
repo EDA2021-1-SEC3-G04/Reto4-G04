@@ -53,9 +53,6 @@ def initCatalog():
     """
     landinpoints: mapa - key: solo el landinpoint con el id, value: info -> toda la info del landinpoints.csv, lstcables -> lista de todos los cabels que llegan a ese landpoint
 
-    ? Landinpoint ID
-    ? capitalCity + ' Land LP ' + country
-
     internet_graph: grafo (tipo de vertides: <lp>-<cables>, <capitalCity>-locales, arcos: peso - distancia harvesine)
 
     components: almacena info de componentes conectados
@@ -66,6 +63,7 @@ def initCatalog():
 
     cables: mapa, Key: cable_name, Value: info -> info de los cables (lenght, capacityTBS...), lstlandingpoints -> landinpoints que conecta ese cable
     """
+
     catalog = {"landing_points":None, "internet_graph":None, "components":None, "paths":None, "countries":None, "cables": None, 'lp_names': None}
     catalog['landingpoints'] = mp.newMap(numelements=14000, maptype='PROBING')
     catalog['lp_names'] = mp.newMap(numelements=14000, maptype='PROBING')
@@ -97,13 +95,13 @@ def addConnections(catalog, connection):
 
     addCableInfo(catalog, connection)  # Agrega la info del cable al mapa
 
-    # ! INFO AL GRAFO
+    # ! Añade info al grafo
     addLPVertex(catalog, origin)  # * Agrega un vertice tipo <LandingPoint>-<Cable>
     addLPVertex(catalog, destination)  # Agrega un vertice tipo <LandingPoint>-<Cable>
-    # ! TODO: checkdistance -> distancia entre los dos puntos o  el length?
     # addCable(catalog, origin, destination, cable_length)
-    addCable(catalog, origin, destination, distance)  # * Agrega un cable con peso de distnace
+    addCable(catalog, origin, destination, distance)  # * Agrega un cable con peso de distance
     # addCable(catalog, destination, origin, distance)
+    # ! Info adicional
     addCableLanding(catalog, origin_lp, cable)  # * Agrega a lista de cables para un landinpoint
     addCableLanding(catalog, destination_lp, cable)
     
@@ -366,7 +364,14 @@ def formatVertex(origin, cable):
 # Construccion de modelos
 
 # Funciones para agregar informacion al catalogo
+# ==============================
+# REQUERIMIENTO 1
+# ==============================
 def calcConnectedComponents(catalog, lp1, lp2): 
+    """
+    Usa el algoritmo de Kosaraju Para calcular los componentes connectados del grafo.
+    El numero de clusters (componenetes conectados)  y si dos lps estan fuertemente conectados (pertencecen al mismo cluster)
+    """
     catalog['components'] = scc.KosarajuSCC(catalog['internet_graph'])
     num_clusters = scc.connectedComponents(catalog['components'])
     landpts_cluster = scc.stronglyConnected(catalog['components'], lp1, lp2)
@@ -378,6 +383,10 @@ def calcConnectedComponents(catalog, lp1, lp2):
 
 
 def getLandingPointId(catalog, lp): 
+    """
+    Dado un landinpoint (Ej. Redondo Beach) retorna el su identificador (id)
+    Como el usuario solo da parte del nombre del landinpoint (Ej. Redondo Beach en verdad es Redondo Beach, CA, United States, toca usar la función de in para revisar que el string este dentro del nombre completo)
+    """
     lp_id = None
     lst_name = mp.keySet(catalog['lp_names'])
     notFound = True
@@ -391,28 +400,26 @@ def getLandingPointId(catalog, lp):
 
     return lp_id
 
+
 # ==============================
 # REQUERIMIENTO 2
 # ==============================
 def pointsInterconnection(catalog):
+    """
+    """
     lst_lps = mp.keySet(catalog['landingpoints'])
     lstmax_lp = lt.newList(datastructure='ARRAY_LIST')
     maxdeg = 0
     for landingpoint in lt.iterator(lst_lps):
         lst_cables = mp.get(catalog['landingpoints'], landingpoint)['value']['lstcables']
         degree = mp.size(lst_cables)
-        # degree = lt.size(lst_cables)
         if (degree == maxdeg): 
             lt.addLast(lstmax_lp, landingpoint)
-            #agregar el nuevo a la lista
         if(degree > maxdeg):
             lstmax_lp = lt.newList(datastructure='ARRAY_LIST') 
             lt.addLast(lstmax_lp, landingpoint)
             maxdeg = degree
             
-        # print(landingpoint, 'current', degree, 'max', maxdeg)
-        # print(lstmax_lp) #updetear el nuevo mayor
-        # time.sleep(2)
     return lstmax_lp, maxdeg
 
 
@@ -422,6 +429,7 @@ def pointsInterconnection(catalog):
 # ==============================
 
 def getCapitalCity(catalog, country):
+    """Dado un pais, retorna su capital"""
     country_entry = mp.get(catalog['countries'], country)
     capital_city = None
     if country_entry is not None:
@@ -429,9 +437,13 @@ def getCapitalCity(catalog, country):
     return capital_city
 
 def minimumDistanceCountries(catalog, capital_1, capital_2): 
+    """
+    Usa el algoritmo de Dijkstra para calcular los caminos mas baratos desde la capital 1
+    Luego, con la estructura del Dijstra revisa si hay un camino entre la capital 1 y la capital 2
+    """
     catalog['paths'] =  djk.Dijkstra(catalog['internet_graph'], capital_1)
+    path_exists = djk.hasPathTo(catalog['paths'], capital_2)
     path = djk.pathTo(catalog['paths'], capital_2)
-     
     return path
 
 
@@ -439,7 +451,7 @@ def minimumDistanceCountries(catalog, capital_1, capital_2):
 # REQUERIMIENTO 4
 # ==============================
 def findGraphMST(catalog): 
-    # catalog['internet_graph']['directed'] = False # ? Prim solo sirve en grafos no dirigidos 
+    """Usa Prim para crear el MST"""
     mst_structure = prim.PrimMST(catalog['internet_graph'])
     mst_structure = prim.edgesMST(catalog['internet_graph'], mst_structure)
     mst = mst_structure['mst']
@@ -447,17 +459,14 @@ def findGraphMST(catalog):
     mst_weight = prim.weightMST(catalog['internet_graph'], mst_structure)
 
     nodes = lt.size(mst)
-    # print('nodes v2', lt.size(edgesTo))
-    # print('first elements', lt.firstElement(mst))
     mst_graph = createMSTgraph(catalog, mst)
-
     path = getMSTroots(catalog, mst_graph)
 
     return nodes, mst_weight, path
 
 
 def createMSTgraph(catalog, mst): 
-    """Usa la lista del mst para crear el grafo correspondiente"""
+    """Usa la lista del MST dada por el prim para crear el grafo correspondiente"""
     catalog['mst'] = gr.newGraph(datastructure='ADJ_LIST', directed=True, size=3600, comparefunction=cmpLandingPoints)
     for edge in lt.iterator(mst): 
         vertexA = edge['vertexA']
@@ -471,25 +480,26 @@ def createMSTgraph(catalog, mst):
         edge = gr.getEdge(catalog['mst'], vertexA, vertexB)
         if edge is None:
             gr.addEdge(catalog['mst'], vertexA, vertexB, weight)
-            # gr.addEdge(catalog['mst'], vertexB, vertexA, weight)
     return catalog['mst']
 
 def getMSTroots(catalog, mst_graph):
-    
     roots = lt.newList(datastructure='ARRAY_LIST') #! 
     mst_vertices = gr.vertices(mst_graph)
     i = 0
-    # * Finds all 'roots' of the MST  (Nodes with an indegree of 0)
+    # * Ecuentra todas las 'raices' del MST (nodos/vertices con un indegree de 0) 
     while i <= lt.size(mst_vertices): 
         vertex = lt.getElement(mst_vertices, i)
         indegree = gr.indegree(mst_graph, vertex)
         outdegree = gr.outdegree(mst_graph, vertex)
-        if indegree == 0 and outdegree > 0:
+        if indegree == 0 and outdegree > 0: # Outdegree > 0 para asegurar que si se conecta con algo más
             lt.addLast(roots, vertex)
         i += 1
     
+
     longest_branch_dist = 0
     longest_branch_bfs = None
+    # Por cada raiz que se econtro, calcula la rama más larga entre esta y una hoja. Guarda la rama más larga entre todas las rices.
+
     for root in lt.iterator(roots):
         info = longestBranch(catalog, mst_graph, root)
         if info[0] > longest_branch_dist: 
@@ -497,9 +507,7 @@ def getMSTroots(catalog, mst_graph):
             end_vertex = info[1]
             longest_branch_bfs = info[2]
 
-    
-    path = bfs.pathTo(longest_branch_bfs, end_vertex)
-    
+    path = bfs.pathTo(longest_branch_bfs, end_vertex) # Camino entre la raiz y hoja de la rama más larga
     
     return path, longest_branch_dist
 
@@ -518,12 +526,6 @@ def longestBranch(catalog, mst_graph, root):
             end_vertex = vertex
         
         if gr.indegree(mst_graph, vertex) == 0: 
-            print(vertex)
-    
-    longest_path = bfs.hasPathTo(bfs_structure, end_vertex)
-    print('rta', end_vertex, max_dist)
-    print(longest_path)
-    print('indegree of end', gr.indegree(mst_graph, end_vertex))
 
     return max_dist, end_vertex, bfs_structure
 
@@ -534,29 +536,28 @@ def longestBranch(catalog, mst_graph, root):
 # REQUERIMIENTO 5
 # ==============================
 def failureOfLP(catalog, landingpoint):
+
     lp_entry = mp.get(catalog['landingpoints'], landingpoint)
     lst_cities = lt.newList(datastructure='ARRAY_LIST')
     lst_lps = lt.newList(datastructure='ARRAY_LIST')
     if lp_entry is not None: 
-        cables = lp_entry['value']['lstcables']
-        for cable in lt.iterator(mp.keySet(cables)): # Cables adjacentes al LP por param
-            if 'Land Cable' in cable: # Estos cables conectan a un lp con una ciudad 
+        cables = lp_entry['value']['lstcables'] 
+        for cable in lt.iterator(mp.keySet(cables)): # Cables adjacentes al LP por param (LP es solo el numero)
+            if 'Land Cable' in cable: # Estos cables conectan a un lp con una ciudad (Capital del pais donde esta el LP que entra por param)
                lt.addLast(lst_cities, cable.split('-')[1:])
             elif not 'Local Cable' in cable: # Ver los cables adjacentes (que no forman parte de la red local)
-                vertex = landingpoint + "-" + cable
-                adjacents = gr.adjacents(catalog['internet_graph'], vertex)
-                # * no tener el cuenta el landinpoint que llega por param
-                # * toca ver para cada adjacente si tiene un Land Cable con alguna Ciudad
-                
+                vertex = landingpoint + "-" + cable  # "Arma" los vertices tipo <LP>-<Cable> 
+                adjacents = gr.adjacents(catalog['internet_graph'], vertex) # * Estos son los "verdaderos" adjs del LP
                 for adj_vertex in lt.iterator(adjacents):
+                    # Para cada adjacente que sea del tipo <LP>-<Cable>  y que ya no este en la lista de lps
                     if '-' in adj_vertex and not(lt.isPresent(lst_lps, adj_vertex.split('-')[:1])): 
-                        lt.addLast(lst_lps, adj_vertex.split('-')[:1])
+                        lt.addLast(lst_lps, adj_vertex.split('-')[:1])  # Se guarda solo el # del LP
                                          
-    lst_countries = locateLPs(catalog, lst_lps)
+    lst_countries = locateLPs(catalog, lst_lps) # Donde esta cada LP adj
 
-    for city in lt.iterator(lst_cities):
+    for city in lt.iterator(lst_cities):  # Revisa la lista de ciudades (Se espera que solo haya una - capital de donde esta el LP)
         country = mp.get(catalog['capitals'], city[0])['value']
-        if not lt.isPresent(lst_countries, country): 
+        if not lt.isPresent(lst_countries, country): # Añade a los paises si no esta todavia
             lt.addLast(lst_countries, city)
 
     lp_lat = mp.get(catalog['landingpoints'], landingpoint)['value']['info']['latitude']
@@ -564,29 +565,26 @@ def failureOfLP(catalog, landingpoint):
 
     pre_sort = lt.newList()
     for country in lt.iterator(lst_countries):
+        # Para cada paiis adjacente, calcula la distancia entre su capital y el LP por param
         cc_lat = mp.get(catalog['countries'], country)['value']['CapitalLatitude']
         cc_lon = mp.get(catalog['countries'], country)['value']['CapitalLongitude']
 
         distance = calcHaversine(lp_lat, lp_lon, cc_lat, cc_lon)
-        lt.addLast(pre_sort, {'country': country, 'distance': distance})
+        lt.addLast(pre_sort, {'country': country, 'distance': distance, 'CapitalLatitude': cc_lat, 'CapitalLongitude': cc_lon})
 
-    
+    # Ordena la lista final en orden descendente en cuanto a la distancia en km entre el LP y los piaises
     sorted_country = mer.sort(pre_sort, sortCountries)
     return sorted_country
 
-def sortCountries(country_1, country_2):
-    dist_1 = country_1["distance"]
-    dist_2 = country_2["distance"]
-    return dist_1 > dist_2
-
-    
 def locateLPs(catalog, lst_lps): 
     lst_affected_countries = lt.newList(datastructure='ARRAY_LIST')
+    # Para todos los LPs que son adj: 
     for lp in lt.iterator(lst_lps):
         lp = lp[0]
         notFound = True
         i = 1
         cables = mp.keySet(mp.get(catalog['landingpoints'], lp)['value']['lstcables'])
+        # Busca los cables que sean 'Land Cable' (estos son los conecta un LP con la capital (si la hay))
         while notFound and i < lt.size(cables):
             cable = lt.getElement(cables, i)
             if 'Land Cable' in cable: 
@@ -595,15 +593,9 @@ def locateLPs(catalog, lst_lps):
                 if not (lt.isPresent(lst_affected_countries, country)): 
                     lt.addLast(lst_affected_countries, country)
                 notFound = False
+                # Cuando ya la haya encontrado se acaba el ciclo
             i += 1
-
     return lst_affected_countries
-
-    
-
-
-
-
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def cmpLandingPoints(lp, lp_dict):
@@ -615,6 +607,9 @@ def cmpLandingPoints(lp, lp_dict):
     else:
         return -1
 
-# Funciones de ordenamiento
-
+def sortCountries(country_1, country_2):
+    "Funcion de comparación para ordenar las distancia en orden descendente"
+    dist_1 = country_1["distance"]
+    dist_2 = country_2["distance"]
+    return dist_1 > dist_2
 

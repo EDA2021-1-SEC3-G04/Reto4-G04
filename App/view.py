@@ -32,7 +32,7 @@ from DISClib.ADT import stack
 assert cf
 
 
-import time
+
 
 """
 La vista se encarga de la interacción con el usuario
@@ -49,6 +49,27 @@ connectionsfile = 'connections.csv'
 landingpointsfile = 'landing_points.csv'
 
 catalog = None
+
+colors = [
+    'red',
+    'blue',
+    'gray',
+    'darkred',
+    'lightred',
+    'orange',
+    'beige',
+    'green',
+    'darkgreen',
+    'lightgreen',
+    'darkblue',
+    'lightblue',
+    'purple',
+    'darkpurple',
+    'pink',
+    'cadetblue',
+    'lightgray',
+    'black'
+]
 
 # ___________________________________________________
 #  Menu principal
@@ -72,7 +93,6 @@ def optionTwo(catalog, lp1, lp2):
     lp_id1 = controller.getLandingPointId(catalog, lp1)
     lp_id2 = controller.getLandingPointId(catalog, lp2)   
     if (lp_id1 is not None) and (lp_id2 is not None):
-        print(lp_id1, lp_id2)
         ans = controller.calcConnectedComponents(catalog, lp_id1, lp_id2)
         print('El número de clusteres en la red es: ' + str(ans[0]))
         if ans[1]: 
@@ -86,8 +106,7 @@ def optionTwo(catalog, lp1, lp2):
 def optionThree(catalog):
     """Req 2 - mapa de lps"""
     ans = controller.pointsInterconnection(catalog)
-    print(ans[0])
-    print(ans[1])
+
     item_map = folium.Map(location=[25.557547, -24.568953], zoom_start=2)
     for landinpoint in lt.iterator(ans[0]):
         item = mp.get(catalog['landingpoints'], landinpoint)['value']['info']
@@ -96,31 +115,21 @@ def optionThree(catalog):
         item_lat = float(item['latitude'])
         item_lon = float(item['longitude'])
         cables = mp.get(catalog['landingpoints'], landinpoint)['value']['lstcables']
-        folium.Marker(location=[item_lat, item_lon], popup="<strong></strong>", tooltip=tooltip).add_to(item_map)
+        folium.Marker(location=[item_lat, item_lon], popup="<strong></strong>", tooltip=tooltip, icon=folium.Icon(color='darkred', icon = 'cloud')).add_to(item_map)
         for cable in lt.iterator(mp.keySet(cables)): 
             cable = cable.split('-')[1:][0]
             cable_info = mp.get(catalog['landingpoints'], cable)['value']['info']
             cable_lat = float(cable_info['latitude'])
             cable_lon = float(cable_info['longitude'])
             tooltip_2 = cable_info['name']
-            folium.Marker(location=[cable_lat, cable_lon], popup="<strong></strong>", tooltip=tooltip_2, color='red').add_to(item_map)
+            folium.Marker(location=[cable_lat, cable_lon], popup="<strong>Landpoint se connecta con Jakarta</strong>", tooltip=tooltip_2,icon=folium.Icon(color='lightgray')).add_to(item_map)
             folium.PolyLine([(item_lat, item_lon), (cable_lat, cable_lon)],
-                color='grey',
+                color='gray',
                 weight=2,
                 opacity=0.6).add_to(item_map)
 
-
-        
-
-    item_map.save('Req 2.html')    
-
     print('\nHay', ans[1], 'cables conectados a dicho(s) landingpoints')
-    # print(lt.size(mp.get(catalog['landingpoints'], 'Sofia')['value']['lstcables']))
-    # print(lt.size(mp.get(catalog['landingpoints'], '3221')['value']['lstcables']))
-    # print(gr.adjacentEdges(catalog['internet_graph'], 'Sofia'))
-
-    
-    
+    item_map.save('Req 2.html')    
 
 
 def optionFour(catalog, country_1, country_2):
@@ -130,22 +139,10 @@ def optionFour(catalog, country_1, country_2):
     # print(capital_1, capital_2)
     if (capital_1 is not None) and (capital_2 is not None):
         
-        # a = gr.getEdge(catalog['internet_graph'],'5693-Colombia-Florida Subsea Fiber (CFX-1)', '3563-Colombia-Florida Subsea Fiber (CFX-1)' )
-        # b = gr.getEdge(catalog['internet_graph'],'3563-Colombia-Florida Subsea Fiber (CFX-1)', '3563-GigNet-1')
-        # c = gr.getEdge(catalog['internet_graph'],'3563-GigNet-1', '3842-GigNet-1')
-
-        # print(a, '-->', b, '-->', c)
-
-        # print(gr.getEdge(catalog['internet_graph'],'10398', '10398-SednaLink Fibre'))
-
-        # ans = controller.minimumDistanceCountries(catalog, '5693', '3842')
-        # ans = controller.minimumDistanceCountries(catalog, '10398', '10398-SednaLink Fibre')
-
-        # ans = controller.minimumDistanceCountries(catalog, '5693', '5693-Colombia-Florida Subsea Fiber (CFX-1)')
-
-        # ans = controller.minimumDistanceCountries(catalog, 'Bogota', '5693')
         path = controller.minimumDistanceCountries(catalog, capital_1, capital_2)
         if path is not None:
+            path_folium = path.copy()
+            printMapDijkstra(catalog, path_folium)
             print("\nPresione 'enter' para ver el siguente\n")
             total_dist = 0.0
             while not stack.isEmpty(path):
@@ -153,12 +150,67 @@ def optionFour(catalog, country_1, country_2):
                 total_dist += edge['weight']
                 print(edge['vertexA'] + "-->" + edge['vertexB'] + " costo: " + str(edge['weight']) + " km")
                 input()
+            print('El costo total es de ', total_dist, 'km')
         else:
             print('No existe el camino entre', capital_1, 'y', capital_2)
             
-        print('El costo total es de ', total_dist, 'km')
     else:
         print('Alguno de los paises no fue valido')
+
+
+def printMapDijkstra(catalog, path):
+    """
+    Usa la libreria de folium para crear un mapa que muestra el camino entre las capitales de los dos paises
+    """
+    firstElement = stack.pop(path)
+    vertexA = firstElement['vertexA'] # Primera Capital
+    vertexB = firstElement['vertexB'].split('-')[:1][0]
+    vertexA_info = mp.get(catalog['landingpoints'], vertexA)['value']['info']
+    vertexB_info = mp.get(catalog['landingpoints'], vertexB)['value']['info']
+
+    item_map = folium.Map(location=[float(vertexA_info['latitude']), float(vertexA_info['longitude'])], zoom_start=7)
+
+    folium.Marker(location=[float(vertexA_info['latitude']), float(vertexA_info['longitude'])], tooltip=vertexA_info['name'], icon=folium.Icon(color='darkred', icon='cloud')).add_to(item_map)
+
+    folium.Marker(location=[float(vertexB_info['latitude']), float(vertexB_info['longitude'])], tooltip=vertexB_info['name'], icon=folium.Icon(color='lightgray')).add_to(item_map)
+
+    loc = [(float(vertexA_info['latitude']), float(vertexA_info['longitude'])), (float(vertexB_info        ['latitude']), float(vertexB_info['longitude']))]
+    folium.PolyLine(loc,
+                color='gray',
+                weight=5,
+                opacity=0.6).add_to(item_map)
+
+    while stack.size(path) > 1:
+        element = stack.pop(path)
+        vertexA = element['vertexA'].split('-')[:1][0]# Primera Capital
+        vertexB = element['vertexB'].split('-')[:1][0]
+        
+        vertexA_info = mp.get(catalog['landingpoints'], vertexA)['value']['info']
+        vertexB_info = mp.get(catalog['landingpoints'], vertexB)['value']['info']
+
+        folium.Marker(location=[float(vertexA_info['latitude']), float(vertexA_info['longitude'])], tooltip=vertexA_info['name'], icon=folium.Icon(color='lightgray')).add_to(item_map)
+        folium.Marker(location=[float(vertexB_info['latitude']), float(vertexB_info['longitude'])], tooltip=vertexB_info['name'], icon=folium.Icon(color='lightgray')).add_to(item_map)
+        folium.PolyLine([(float(vertexA_info['latitude']), float(vertexA_info['longitude'])), (float(vertexB_info['latitude']), float(vertexB_info['longitude']))],
+                    color='gray',
+                    weight=5,
+                    opacity=0.6).add_to(item_map)
+    
+    lastElement = stack.pop(path)
+    vertexA = lastElement['vertexA'].split('-')[:1][0] 
+    vertexB = lastElement['vertexB'] # Ultima Capital
+    vertexA_info = mp.get(catalog['landingpoints'], vertexA)['value']['info']
+    vertexB_info = mp.get(catalog['landingpoints'], vertexB)['value']['info']
+
+    folium.Marker(location=[float(vertexB_info['latitude']), float(vertexB_info['longitude'])], tooltip=vertexB_info['name'], icon=folium.Icon(color='darkred', icon='cloud')).add_to(item_map)
+    folium.Marker(location=[float(vertexA_info['latitude']), float(vertexA_info['longitude'])], tooltip=vertexA_info['name'], icon=folium.Icon(color='lightgray')).add_to(item_map)
+    folium.PolyLine([(float(vertexA_info['latitude']), float(vertexA_info['longitude'])), (float(vertexB_info['latitude']), float(vertexB_info['longitude']))],
+                color='gray',
+                weight=5,
+                opacity=0.6).add_to(item_map)
+
+
+    item_map.save('Req 3.html')
+    
 
 
 def optionFive(catalog):
@@ -181,11 +233,30 @@ def optionFive(catalog):
 def optionSix(catalog, landingpoint):
     "Req 5"
     lp_id = controller.getLandingPointId(catalog, landingpoint)
+    
     if lp_id is not None:
         ans = controller.failureOfLP(catalog, lp_id)
+        lp_info = mp.get(catalog['landingpoints'], lp_id)['value']['info']
+        
+        item_map = folium.Map(location=[float(lp_info['latitude']), float(lp_info['longitude'])], zoom_start=3)
+
+        lp_lat = float(lp_info['latitude'])
+        lp_lon = float(lp_info['longitude'])
+
+        folium.Marker(location=[lp_lat, lp_lon], tooltip=lp_info['name'], icon=folium.Icon(color='darkred')).add_to(item_map)
+
         print('Hay', lt.size(ans), 'paises afectados')
         for country in lt.iterator(ans): 
             print('Pais:', country['country'], '\t Distancia:', country['distance'], 'km')
+
+            
+            folium.Marker(location=[float(country['CapitalLatitude']), float(country['CapitalLongitude'])], tooltip=country['country'], icon=folium.Icon(color='lightblue')).add_to(item_map)
+            folium.PolyLine([(lp_lat, lp_lon), (float(country['CapitalLatitude']), float(country['CapitalLongitude']))],
+                color='gray',
+                weight=5,
+                opacity=0.6).add_to(item_map)
+
+        item_map.save('Req 5.html')
     else:
         print('El landingpoint no es válido')
     pass
