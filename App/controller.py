@@ -162,6 +162,11 @@ def failureOfLP(catalog, landingpoint):
     start_memory = getMemory()
 
     answer = model.failureOfLP(catalog, landingpoint)
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
 
     return answer, delta_time, delta_memory
 
