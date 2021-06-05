@@ -32,7 +32,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import queue as q
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as mer
-from DISClib.ADT.graph import gr
+from DISClib.ADT.graph import gr, outdegree
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Algorithms.Graphs import bfs
@@ -450,7 +450,7 @@ def findGraphMST(catalog):
     mst = mst_structure['mst']
     edgesTo = mst_structure['edgeTo']
     mst_weight = prim.weightMST(catalog['internet_graph'], mst_structure)
-
+    
     nodes = lt.size(mst)
     mst_graph = createMSTgraph(catalog, mst)
     path = getMSTroots(catalog, mst_graph)
@@ -512,7 +512,6 @@ def longestBranch(catalog, mst_graph, root):
     for vertex in lt.iterator(keySet):
         vertex_info = mp.get(bfs_structure['visited'], vertex)['value']
         dist_to = vertex_info['distTo']
-
         if dist_to > max_dist: 
             max_dist = dist_to
             end_vertex = vertex

@@ -183,6 +183,7 @@ def printMapDijkstra(catalog, path):
     folium.PolyLine(loc,
                 color='gray',
                 weight=5,
+                tooltip=str(firstElement['weight'])+' km',
                 opacity=0.6).add_to(item_map)
 
     while stack.size(path) > 1:
@@ -199,6 +200,7 @@ def printMapDijkstra(catalog, path):
         folium.PolyLine([(float(vertexA_info['latitude']), float(vertexA_info['longitude'])), (float(vertexB_info['latitude']), float(vertexB_info['longitude']))],
                     color='gray',
                     weight=5,
+                    tooltip=str(element['weight']) +' km',
                     opacity=0.6).add_to(item_map)
     
 
@@ -214,6 +216,7 @@ def printMapDijkstra(catalog, path):
     folium.PolyLine([(float(vertexA_info['latitude']), float(vertexA_info['longitude'])), (float(vertexB_info['latitude']), float(vertexB_info['longitude']))],
                 color='gray',
                 weight=5,
+                tooltip=str(lastElement['weight']) +' km',
                 opacity=0.6).add_to(item_map)
 
 
@@ -225,7 +228,7 @@ def optionFive(catalog):
     print("El número de nodos conectados a la red de expansión mínima es: ", ans[0])
     print("El costo total (distancia en [km]) de la red de expansión mínima es: ", ans[1])
     print("La rama más larga que hace parte de la red de expansión mínima : ")
-    print(ans[2])
+    
     prevEdge = None
     while not stack.isEmpty(ans[2][0]):
         edge = stack.pop(ans[2][0])
@@ -254,10 +257,12 @@ def optionSix(catalog, landingpoint):
             print('Pais:', country['country'], '\t Distancia:', country['distance'], 'km')
 
             # Marker para cada pais, y conexion con el LP que fallo
+            distance = str(country['distance']) + ' km'
             folium.Marker(location=[float(country['CapitalLatitude']), float(country['CapitalLongitude'])], tooltip=country['country'], icon=folium.Icon(color='lightblue')).add_to(item_map)
             folium.PolyLine([(lp_lat, lp_lon), (float(country['CapitalLatitude']), float(country['CapitalLongitude']))],
                 color='gray',
                 weight=5,
+                tooltip=distance,
                 opacity=0.6).add_to(item_map)
 
         item_map.save('Req 5.html')
