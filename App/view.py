@@ -94,21 +94,24 @@ def optionTwo(catalog, lp1, lp2):
     lp_id2 = controller.getLandingPointId(catalog, lp2)   
     if (lp_id1 is not None) and (lp_id2 is not None):
         ans = controller.calcConnectedComponents(catalog, lp_id1, lp_id2)
-        print('El número de clusteres en la red es: ' + str(ans[0]))
-        if ans[1]: 
+        print('El número de clusteres en la red es: ' + str(ans[0][0]))
+        if ans[0][1]: 
             print(lp1, "y", lp2, "estan en el mismo cluster")
         else:
             print(lp1, "y", lp2, "NO estan en el mismo cluster")
     else:
         print('Alguno de los Landinpoint no es válido')
-        
+    
+    print("\n\n***  Medidas de tiempo y espacio   ***")
+    print("Tiempo [ms]: ", f"{ans[1]:.3f}", "  ||  ",
+             "Memoria [kB]: ", f"{ans[2]:.3f}")
 
 def optionThree(catalog):
     """Req 2 - mapa de lps"""
     ans = controller.pointsInterconnection(catalog)
 
     item_map = folium.Map(location=[25.557547, -24.568953], zoom_start=2)
-    for landinpoint in lt.iterator(ans[0]):
+    for landinpoint in lt.iterator(ans[0][0]):
         item = mp.get(catalog['landingpoints'], landinpoint)['value']['info']
         print('Nombre:', item['id'], '\tLugar:', item['name'], '\tIdentificador: ', item['landing_point_id'])
 
@@ -132,7 +135,12 @@ def optionThree(catalog):
                 weight=2,
                 opacity=0.6).add_to(item_map)
 
-    print('\nHay', ans[1], 'cables conectados a dicho(s) landingpoints')
+    print('\nHay', ans[0][1], 'cables conectados a dicho(s) landingpoints')
+
+    print("\n\n***  Medidas de tiempo y espacio   ***")
+    print("Tiempo [ms]: ", f"{ans[1]:.3f}", "  ||  ",
+             "Memoria [kB]: ", f"{ans[2]:.3f}")
+
     item_map.save('Req 2.html')    
 
 
@@ -141,7 +149,8 @@ def optionFour(catalog, country_1, country_2):
     capital_1 = controller.getCapitalCity(catalog, country_1)
     capital_2 = controller.getCapitalCity(catalog, country_2)
     if (capital_1 is not None) and (capital_2 is not None):
-        path = controller.minimumDistanceCountries(catalog, capital_1, capital_2)
+        ans = controller.minimumDistanceCountries(catalog, capital_1, capital_2)
+        path = ans[0]
         if path is not None:
             path_folium = path.copy()
             printMapDijkstra(catalog, path_folium)
@@ -156,7 +165,10 @@ def optionFour(catalog, country_1, country_2):
             print('El costo total es de ', total_dist, 'km')
         else:
             print('No existe el camino entre', capital_1, 'y', capital_2)
-            
+        
+        print("\n\n***  Medidas de tiempo y espacio   ***")
+        print("Tiempo [ms]: ", f"{ans[1]:.3f}", "  ||  ",
+                 "Memoria [kB]: ", f"{ans[2]:.3f}")
     else:
         print('Alguno de los paises no fue valido')
 
@@ -224,7 +236,8 @@ def printMapDijkstra(catalog, path):
 
 def optionFive(catalog):
     "Req 4"
-    ans = controller.findGraphMST(catalog)
+    answer = controller.findGraphMST(catalog)
+    ans = answer[0]
     print("El número de nodos conectados a la red de expansión mínima es: ", ans[0])
     print("El costo total (distancia en [km]) de la red de expansión mínima es: ", ans[1])
     print("La rama más larga que hace parte de la red de expansión mínima : ")
@@ -238,13 +251,19 @@ def optionFive(catalog):
 
     print('Esta rama tiene', ans[2][1], 'arcos')
     
+    print("\n\n***  Medidas de tiempo y espacio   ***")
+    print("Tiempo [ms]: ", f"{answer[1]:.3f}", "  ||  ",
+             "Memoria [kB]: ", f"{answer[2]:.3f}")
+
 
 def optionSix(catalog, landingpoint):
     "Req 5"
     lp_id = controller.getLandingPointId(catalog, landingpoint)
     
     if lp_id is not None:
-        ans = controller.failureOfLP(catalog, lp_id)
+
+        answer = controller.failureOfLP(catalog, lp_id)
+        ans = answer[0]
         lp_info = mp.get(catalog['landingpoints'], lp_id)['value']['info']
         
         item_map = folium.Map(location=[float(lp_info['latitude']), float(lp_info['longitude'])], zoom_start=3)
@@ -266,9 +285,13 @@ def optionSix(catalog, landingpoint):
                 opacity=0.6).add_to(item_map)
 
         item_map.save('Req 5.html')
+
+        print("\n\n***  Medidas de tiempo y espacio   ***")
+        print("Tiempo [ms]: ", f"{answer[1]:.3f}", "  ||  ",
+                 "Memoria [kB]: ", f"{answer[2]:.3f}")
     else:
         print('El landingpoint no es válido')
-    pass
+    
 
 
 def optionSeven(catalog):
